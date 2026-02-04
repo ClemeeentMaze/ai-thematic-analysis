@@ -21,6 +21,7 @@ import { useStatePlayground } from '@framework/hooks/useStatePlayground';
 // Local components
 import { BuilderHeader } from './components/BuilderHeader';
 import { BlockList } from './components/BlockList';
+import { BlockResults } from './components/BlockResults';
 
 // Mock data
 import { BLOCK_TYPES, DEFAULT_USE_CASE, USE_CASES } from './data';
@@ -134,11 +135,11 @@ function ThematicAnalysisV1() {
         </Box>
         
         {/* 
-          Main Content Area
+          Main Content Area - Block Results
           Flex: 1 (grows to fill remaining space)
         */}
         <Box className="flex-1 h-full bg-white">
-          {/* Content for selected block will go here */}
+          <BlockResults block={selectedBlock} />
         </Box>
       </Flex>
     </Flex>
