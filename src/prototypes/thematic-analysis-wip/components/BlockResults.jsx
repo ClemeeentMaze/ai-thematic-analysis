@@ -323,7 +323,8 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
   
   // Check if this block type has highlights (and thus should show themes)
   const hasHighlights = highlightCount > 0;
-  const showThemesSection = hasHighlights && generatedThemes.length > 0;
+  // Only show themes section in Open Question (input) block
+  const showThemesSection = block.type === 'input' && generatedThemes.length > 0;
 
   return (
     <ScrollContainer className="h-full">
