@@ -296,8 +296,9 @@ function ThemeRow({ theme, frequency, percentage }) {
  * @param {Object} props.block - The block to display
  * @param {boolean} props.isViewed - Whether the block has been viewed (hides new highlights indicators)
  * @param {Array} props.generatedThemes - AI-generated themes after analysis
+ * @param {Function} props.onNavigateToThemes - Callback to navigate to thematic analysis
  */
-export function BlockResults({ block, isViewed = false, generatedThemes = [] }) {
+export function BlockResults({ block, isViewed = false, generatedThemes = [], onNavigateToThemes }) {
   const [activeTab, setActiveTab] = useState('all');
   
   if (!block) {
@@ -368,8 +369,8 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [] }) 
         {/* Chart Placeholder */}
         <Box className="bg-[#f8f8fb] rounded-lg h-[200px] mb-8" />
 
-        {/* Themes Empty State - shown for blocks with highlights (except prototype_test) but before analysis */}
-        {hasHighlights && !showThemesSection && block.type !== 'prototype_test' && (
+        {/* Themes Empty State - shown only for Open Question (input) block before analysis */}
+        {block.type === 'input' && !showThemesSection && (
           <div className="mb-8">
             <Flex alignItems="center" gap="SM" className="mb-4">
               <Heading level={3}>Themes</Heading>
@@ -389,13 +390,10 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [] }) 
                   </Text>
                 </div>
                 <ActionButton 
-                  emphasis="primary" 
+                  emphasis="secondary" 
                   size="MD" 
                   icon={<Sparkles size={16} />}
-                  onClick={() => {
-                    // This would navigate to the Themes tab in a real implementation
-                    console.log('Navigate to thematic analysis');
-                  }}
+                  onClick={onNavigateToThemes}
                 >
                   Start thematic analysis
                 </ActionButton>
