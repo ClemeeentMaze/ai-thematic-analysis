@@ -1,5 +1,5 @@
 {
-  "name": "project-prototyping-boilerplate",
+  "name": "ai-thematic-analysis",
   "private": true,
   "version": "0.1.0",
   "description": "A boilerplate for rapidly creating and testing multiple prototypes using React, Vite, and Tailwind CSS with Ariane design system components.",
