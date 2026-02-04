@@ -169,10 +169,10 @@ function ThematicAnalysisV1() {
 }
 
 // Prototype metadata for the selector
-ThematicAnalysisV1.Title = "Unmoderated Results";
-ThematicAnalysisV1.Description = "Results view for unmoderated studies with themes and participants";
+ThematicAnalysisV1.Title = "AI Thematic Analysis (WIP)";
+ThematicAnalysisV1.Description = "Work in progress - AI-powered thematic analysis exploration";
 ThematicAnalysisV1.Order = 1;
-ThematicAnalysisV1.Group = "Unmoderated Studies";
+ThematicAnalysisV1.Group = "AI Thematic Analysis";
 ThematicAnalysisV1.StateControls = {
   useCase: {
     label: 'Use Case',
