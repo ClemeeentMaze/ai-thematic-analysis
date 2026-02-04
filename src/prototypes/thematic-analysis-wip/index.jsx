@@ -24,6 +24,7 @@ import { BlockList } from './components/BlockList';
 import { BlockResults } from './components/BlockResults';
 import { ParticipantResults } from './components/ParticipantResults';
 import { ThemeResults } from './components/ThemeResults';
+import { ProjectStudiesScreen } from './components/ProjectStudiesScreen';
 
 // Mock data
 import { BLOCK_TYPES, DEFAULT_USE_CASE, USE_CASES } from './data';
@@ -49,6 +50,10 @@ function ThematicAnalysisV1() {
     setUseCase,
   } = useBlocks(DEFAULT_USE_CASE);
 
+  // View state: 'project' shows the project/studies list, 'results' shows the study results
+  const [currentView, setCurrentView] = useState('project');
+  const [selectedStudyId, setSelectedStudyId] = useState(null);
+
   // Tab state for Results/Participants/Themes
   const [activeTab, setActiveTab] = useState('results');
   const [selectedParticipantId, setSelectedParticipantId] = useState('p1');
@@ -62,6 +67,18 @@ function ThematicAnalysisV1() {
   
   // Track AI-generated themes (populated after analysis is complete)
   const [generatedThemes, setGeneratedThemes] = useState([]);
+
+  // Handle study selection from project screen
+  const handleSelectStudy = (studyId) => {
+    setSelectedStudyId(studyId);
+    setCurrentView('results');
+  };
+
+  // Handle back navigation to project screen
+  const handleBackToProject = () => {
+    setCurrentView('project');
+    setSelectedStudyId(null);
+  };
 
   // Handle analysis completion - add generated themes to the list
   const handleAnalysisComplete = (themes) => {
@@ -153,6 +170,12 @@ function ThematicAnalysisV1() {
     }
   }, [selectedBlockType, visibleBlocks, selectBlock]);
 
+  // Show project studies list
+  if (currentView === 'project') {
+    return <ProjectStudiesScreen onSelectStudy={handleSelectStudy} />;
+  }
+
+  // Show study results
   return (
     <Flex 
       flexDirection="column" 
@@ -162,7 +185,7 @@ function ThematicAnalysisV1() {
         HEADER - Fixed 64px height
         Contains: Back button, study name, save state, actions
       */}
-      <BuilderHeader studyMeta={studyMeta} />
+      <BuilderHeader studyMeta={studyMeta} onBack={handleBackToProject} />
       
       {/* 
         CONTENT AREA - Fills remaining height
