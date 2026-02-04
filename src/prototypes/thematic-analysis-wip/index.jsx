@@ -56,6 +56,9 @@ function ThematicAnalysisV1() {
   
   // Track which blocks have been viewed (to hide "new highlights" after viewing)
   const [viewedBlocks, setViewedBlocks] = useState(new Set());
+  
+  // Track if uncategorized theme has been viewed
+  const [uncategorizedViewed, setUncategorizedViewed] = useState(false);
 
   // Mark the PREVIOUS block as viewed when navigating to a new block
   const handleSelectBlock = (blockId) => {
@@ -66,11 +69,20 @@ function ThematicAnalysisV1() {
     selectBlock(blockId);
   };
 
+  // Mark uncategorized as viewed when leaving it
+  const handleSelectTheme = (themeId) => {
+    // Mark uncategorized as viewed when navigating away from it
+    if (selectedThemeId === 'uncategorized' && themeId !== 'uncategorized') {
+      setUncategorizedViewed(true);
+    }
+    setSelectedThemeId(themeId);
+  };
+
   // Mock theme data for ThemeResults
   // Total highlights: prototype_test(4) + scale(2) + input(2) = 8
   const MOCK_THEMES = {
     'thematic-analysis': { id: 'thematic-analysis', name: 'Thematic analysis', status: 'Not enough sessions' },
-    'uncategorized': { id: 'uncategorized', name: 'Uncategorized', highlightCount: 8, newCount: 5 },
+    'uncategorized': { id: 'uncategorized', name: 'Uncategorized', highlightCount: 8, newCount: uncategorizedViewed ? 0 : 5 },
   };
   const selectedTheme = MOCK_THEMES[selectedThemeId];
 
@@ -163,8 +175,9 @@ function ThematicAnalysisV1() {
             selectedParticipantId={selectedParticipantId}
             onSelectParticipant={setSelectedParticipantId}
             selectedThemeId={selectedThemeId}
-            onSelectTheme={setSelectedThemeId}
+            onSelectTheme={handleSelectTheme}
             viewedBlocks={viewedBlocks}
+            uncategorizedViewed={uncategorizedViewed}
           />
         </Box>
         
@@ -175,7 +188,7 @@ function ThematicAnalysisV1() {
         <Box className="flex-1 h-full bg-white">
           {activeTab === 'results' && <BlockResults block={selectedBlock} isViewed={viewedBlocks.has(selectedBlock?.id)} />}
           {activeTab === 'participants' && <ParticipantResults blocks={visibleBlocks} selectedParticipantId={selectedParticipantId} />}
-          {activeTab === 'themes' && <ThemeResults theme={selectedTheme} />}
+          {activeTab === 'themes' && <ThemeResults theme={selectedTheme} isViewed={selectedThemeId === 'uncategorized' ? uncategorizedViewed : false} />}
         </Box>
       </Flex>
     </Flex>

@@ -187,8 +187,10 @@ function ConfidenceProgress({ currentSessions = 5 }) {
 
 /**
  * ThemeResults - Main component for theme detail view
+ * @param {Object} props.theme - The theme to display
+ * @param {boolean} props.isViewed - Whether the theme has been viewed (hides new indicators)
  */
-export function ThemeResults({ theme }) {
+export function ThemeResults({ theme, isViewed = false }) {
   const isThematicAnalysis = theme?.id === 'thematic-analysis';
 
   if (!theme) {
@@ -251,11 +253,11 @@ export function ThemeResults({ theme }) {
         ) : (
           /* Uncategorized view - shows highlights that need themes */
           <Box>
-            {/* Header with count - purple when there are new highlights */}
+            {/* Header with count - purple when there are new highlights (and not viewed) */}
             <Flex alignItems="center" gap="SM" className="mb-6">
               <span className={`
                 px-2 py-1 rounded text-sm font-medium
-                ${MOCK_UNCATEGORIZED_HIGHLIGHTS.filter(h => h.isNew).length > 0 
+                ${!isViewed && MOCK_UNCATEGORIZED_HIGHLIGHTS.filter(h => h.isNew).length > 0 
                   ? 'bg-[#7C3AED] text-white' 
                   : 'bg-neutral-100 text-[#6C718C]'
                 }
@@ -275,7 +277,7 @@ export function ThemeResults({ theme }) {
                   insight={highlight.insight}
                   transcript={highlight.transcript}
                   themes={highlight.themes}
-                  isNew={highlight.isNew}
+                  isNew={isViewed ? false : highlight.isNew}
                   participantId={highlight.participantId}
                 />
               ))}

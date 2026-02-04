@@ -46,6 +46,7 @@ const MOCK_THEME_LIST = [
  * @param {string} props.selectedThemeId - Currently selected theme ID
  * @param {Function} props.onSelectTheme - Theme selection callback
  * @param {Set} props.viewedBlocks - Set of block IDs that have been viewed
+ * @param {boolean} props.uncategorizedViewed - Whether uncategorized theme has been viewed
  */
 export function BlockList({ 
   blocks, 
@@ -58,6 +59,7 @@ export function BlockList({
   selectedThemeId,
   onSelectTheme,
   viewedBlocks = new Set(),
+  uncategorizedViewed = false,
 }) {
   return (
     <Flex flexDirection="column" className="h-full bg-white shadow-[inset_-0.5px_0_0_0_rgba(108,113,140,0.28)]">
@@ -105,14 +107,20 @@ export function BlockList({
           ))}
           {activeTab === 'themes' && (
             <>
-              {MOCK_THEME_LIST.map((theme) => (
-                <ThemeListItem
-                  key={theme.id}
-                  theme={theme}
-                  isSelected={selectedThemeId === theme.id}
-                  onSelect={onSelectTheme}
-                />
-              ))}
+              {MOCK_THEME_LIST.map((theme) => {
+                // Hide new count for uncategorized if it's been viewed
+                const themeWithViewedState = theme.id === 'uncategorized' && uncategorizedViewed
+                  ? { ...theme, newCount: 0 }
+                  : theme;
+                return (
+                  <ThemeListItem
+                    key={theme.id}
+                    theme={themeWithViewedState}
+                    isSelected={selectedThemeId === theme.id}
+                    onSelect={onSelectTheme}
+                  />
+                );
+              })}
               {/* Add theme button */}
               <ActionButton 
                 emphasis="tertiary" 
