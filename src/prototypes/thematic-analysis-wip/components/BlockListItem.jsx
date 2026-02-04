@@ -7,6 +7,7 @@
  * Based on: Figma design "beta-builder-bar" component
  */
 import { Flex, Box, Text, IconFigure } from '@framework/components/ariane';
+import { Sparkles } from 'lucide-react';
 import { BLOCK_TYPES } from '../data';
 
 /**
@@ -34,9 +35,10 @@ export function BlockListItem({ block, isSelected, onSelect, newHighlightCount =
         hover:shadow-[0px_2px_4px_rgba(108,113,140,0.12),inset_0px_0px_0px_0.5px_rgba(108,113,140,0.4)]
       `}
     >
-      {/* New highlights badge - purple color */}
+      {/* New highlights badge - purple color with sparkle icon */}
       {newHighlightCount > 0 && (
-        <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-[#7C3AED] text-white text-[10px] font-semibold rounded-full whitespace-nowrap">
+        <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-[#7C3AED] text-white text-[10px] font-semibold rounded-full whitespace-nowrap flex items-center gap-1">
+          <Sparkles size={10} />
           New highlights
         </div>
       )}

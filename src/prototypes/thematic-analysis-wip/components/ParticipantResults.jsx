@@ -8,6 +8,43 @@ import { useState } from 'react';
 import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon } from '@framework/components/ariane';
 import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Download, Play, Star, Table2, Sparkles, Filter } from 'lucide-react';
 import { BLOCK_TYPES } from '../data';
+import { HighlightCard } from './HighlightCard';
+
+/**
+ * Mock highlights for participants - cross-referenced from blocks
+ */
+const MOCK_PARTICIPANT_HIGHLIGHTS = {
+  'p1': [
+    {
+      id: 'ph1',
+      insight: "Monica is excited about the feature that automatically creates a session and captures information, making it easier to upload and analyze audio or video.",
+      transcript: "Because that would make, that would be fantastic because that's one of the things w...",
+      themes: ['End-to-end'],
+      isNew: true,
+      blockType: 'prototype_test',
+    },
+  ],
+  'p2': [
+    {
+      id: 'ph2',
+      insight: "User found the filtering feature intuitive but wished for more advanced options like date range filtering.",
+      transcript: "I really like how the filters work, they're pretty intuitive. But I was looking for a way to filter by date range and couldn't find it...",
+      themes: [],
+      isNew: true,
+      blockType: 'prototype_test',
+    },
+  ],
+  'p3': [
+    {
+      id: 'ph3',
+      insight: "Participant gave a high rating but mentioned the learning curve was steeper than expected initially.",
+      transcript: "I'd give it an 8 out of 10. It's really powerful once you get the hang of it, but it took me a bit to understand all the features...",
+      themes: [],
+      isNew: true,
+      blockType: 'scale',
+    },
+  ],
+};
 
 /**
  * Video player component with play button overlay
@@ -37,7 +74,7 @@ function VideoPlayer({ thumbnail, duration }) {
 /**
  * Response tab button - Inter 16px font (matching Results page)
  */
-function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
+function ResponseTab({ icon: IconComponent, label, count, newCount, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
@@ -59,6 +96,11 @@ function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
           ${isActive ? 'bg-[#E8F4FF] text-[#0568FD]' : 'bg-neutral-100 text-[#6C718C]'}
         `}>
           {count}
+        </span>
+      )}
+      {newCount !== undefined && newCount > 0 && (
+        <span className="ml-1 px-1.5 py-0.5 rounded text-sm font-medium bg-[#7C3AED] text-white">
+          {newCount} new
         </span>
       )}
     </button>
@@ -234,7 +276,7 @@ const MOCK_TRANSCRIPTS_PER_BLOCK = [
 /**
  * ParticipantResults - Main component
  */
-export function ParticipantResults({ blocks = [] }) {
+export function ParticipantResults({ blocks = [], selectedParticipantId = 'p1' }) {
   const [activeTab, setActiveTab] = useState('all');
   
   // Mock participant data
@@ -244,7 +286,10 @@ export function ParticipantResults({ blocks = [] }) {
     videoThumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',
   };
   
-  const highlightCount = 4;
+  // Get highlights for this participant
+  const participantHighlights = MOCK_PARTICIPANT_HIGHLIGHTS[selectedParticipantId] || [];
+  const highlightCount = participantHighlights.length;
+  const newHighlightCount = participantHighlights.filter(h => h.isNew).length;
 
   return (
     <ScrollContainer className="h-full">
@@ -317,38 +362,68 @@ export function ParticipantResults({ blocks = [] }) {
                   icon={Sparkles} 
                   label="Highlights" 
                   count={highlightCount}
+                  newCount={newHighlightCount}
                   isActive={activeTab === 'highlights'} 
                   onClick={() => setActiveTab('highlights')} 
                 />
               </Flex>
 
-              {/* Responses List - shows blocks with transcripts in between */}
-              <Flex flexDirection="column" gap="MD">
-                {blocks.length > 0 ? (
-                  blocks.map((block, blockIndex) => (
-                    <div key={block.id}>
-                      {/* Block card - first one is highlighted */}
-                      <BlockResponseCard block={block} isHighlighted={blockIndex === 0} />
-                      
-                      {/* Transcript entries after this block */}
-                      {MOCK_TRANSCRIPTS_PER_BLOCK[blockIndex] && (
-                        <div className="mt-3 mb-2">
-                          {MOCK_TRANSCRIPTS_PER_BLOCK[blockIndex].map((transcript, idx) => (
-                            <TranscriptEntry
-                              key={`transcript-${blockIndex}-${idx}`}
-                              timestamp={transcript.timestamp}
-                              text={transcript.text}
-                              highlight={transcript.highlight}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <Text color="default.main.secondary">No blocks to display</Text>
-                )}
-              </Flex>
+              {/* All Responses Tab - shows blocks with transcripts in between */}
+              {activeTab === 'all' && (
+                <Flex flexDirection="column" gap="MD">
+                  {blocks.length > 0 ? (
+                    blocks.map((block, blockIndex) => (
+                      <div key={block.id}>
+                        {/* Block card - first one is highlighted */}
+                        <BlockResponseCard block={block} isHighlighted={blockIndex === 0} />
+                        
+                        {/* Transcript entries after this block */}
+                        {MOCK_TRANSCRIPTS_PER_BLOCK[blockIndex] && (
+                          <div className="mt-3 mb-2">
+                            {MOCK_TRANSCRIPTS_PER_BLOCK[blockIndex].map((transcript, idx) => (
+                              <TranscriptEntry
+                                key={`transcript-${blockIndex}-${idx}`}
+                                timestamp={transcript.timestamp}
+                                text={transcript.text}
+                                highlight={transcript.highlight}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <Text color="default.main.secondary">No blocks to display</Text>
+                  )}
+                </Flex>
+              )}
+
+              {/* Highlights Tab - shows AI-generated highlights for this participant */}
+              {activeTab === 'highlights' && (
+                <Flex flexDirection="column" gap="MD">
+                  {participantHighlights.length > 0 ? (
+                    participantHighlights.map((highlight) => (
+                      <HighlightCard
+                        key={highlight.id}
+                        insight={highlight.insight}
+                        transcript={highlight.transcript}
+                        themes={highlight.themes}
+                        isNew={highlight.isNew}
+                      />
+                    ))
+                  ) : (
+                    <Flex 
+                      alignItems="center" 
+                      justifyContent="center" 
+                      className="py-12 text-[#6C718C]"
+                    >
+                      <Text color="default.main.secondary">
+                        No highlights for this participant yet
+                      </Text>
+                    </Flex>
+                  )}
+                </Flex>
+              )}
             </Box>
           </Flex>
         </div>

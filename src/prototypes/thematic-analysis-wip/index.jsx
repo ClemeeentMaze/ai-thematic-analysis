@@ -160,7 +160,7 @@ function ThematicAnalysisV1() {
         */}
         <Box className="flex-1 h-full bg-white">
           {activeTab === 'results' && <BlockResults block={selectedBlock} />}
-          {activeTab === 'participants' && <ParticipantResults blocks={visibleBlocks} />}
+          {activeTab === 'participants' && <ParticipantResults blocks={visibleBlocks} selectedParticipantId={selectedParticipantId} />}
           {activeTab === 'themes' && <ThemeResults theme={selectedTheme} />}
         </Box>
       </Flex>

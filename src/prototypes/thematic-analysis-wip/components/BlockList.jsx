@@ -71,15 +71,20 @@ export function BlockList({
       {/* Scrollable List - changes based on active tab */}
       <ScrollContainer className="flex-1 min-h-0">
         <Flex flexDirection="column" gap="SM" className="p-3">
-          {activeTab === 'results' && blocks.map((block, index) => (
-            <BlockListItem
-              key={block.id}
-              block={block}
-              isSelected={selectedBlockId === block.id}
-              onSelect={onSelectBlock}
-              newHighlightCount={index === 0 ? 3 : 0} // Mock: first block has 3 new highlights
-            />
-          ))}
+          {activeTab === 'results' && blocks.map((block) => {
+            // Only prototype_test and scale blocks have new highlights
+            const hasNewHighlights = block.type === 'prototype_test' || block.type === 'scale';
+            const highlightCount = block.type === 'prototype_test' ? 2 : block.type === 'scale' ? 1 : 0;
+            return (
+              <BlockListItem
+                key={block.id}
+                block={block}
+                isSelected={selectedBlockId === block.id}
+                onSelect={onSelectBlock}
+                newHighlightCount={hasNewHighlights ? highlightCount : 0}
+              />
+            );
+          })}
           {activeTab === 'participants' && MOCK_PARTICIPANT_LIST.map((participant) => (
             <ParticipantListItem
               key={participant.id}

@@ -26,33 +26,38 @@ const MOCK_RESPONSES = [
 
 /**
  * Mock highlights data - AI-generated from responses
+ * Organized by block type
  */
-const MOCK_HIGHLIGHTS = [
-  {
-    id: 'h1',
-    insight: "Monica is excited about the feature that automatically creates a session and captures information, making it easier to upload and analyze audio or video.",
-    transcript: "Because that would make, that would be fantastic because that's one of the things w...",
-    themes: ['End-to-end'],
-    isNew: true,
-    participantId: '483697735',
-  },
-  {
-    id: 'h2',
-    insight: "User found the filtering feature intuitive but wished for more advanced options like date range filtering.",
-    transcript: "I really like how the filters work, they're pretty intuitive. But I was looking for a way to filter by date range and couldn't find it...",
-    themes: [],
-    isNew: true,
-    participantId: '483697736',
-  },
-  {
-    id: 'h3',
-    insight: "Participant expressed confusion about where to find the export functionality.",
-    transcript: "So I'm trying to export this report, but I can't seem to find where that option is. I've clicked around a few places...",
-    themes: [],
-    isNew: true,
-    participantId: '483697737',
-  },
-];
+const MOCK_HIGHLIGHTS_BY_BLOCK_TYPE = {
+  prototype_test: [
+    {
+      id: 'h1',
+      insight: "Monica is excited about the feature that automatically creates a session and captures information, making it easier to upload and analyze audio or video.",
+      transcript: "Because that would make, that would be fantastic because that's one of the things w...",
+      themes: ['End-to-end'],
+      isNew: true,
+      participantId: '483697735',
+    },
+    {
+      id: 'h2',
+      insight: "User found the filtering feature intuitive but wished for more advanced options like date range filtering.",
+      transcript: "I really like how the filters work, they're pretty intuitive. But I was looking for a way to filter by date range and couldn't find it...",
+      themes: [],
+      isNew: true,
+      participantId: '483697736',
+    },
+  ],
+  scale: [
+    {
+      id: 'h3',
+      insight: "Participant gave a high rating but mentioned the learning curve was steeper than expected initially.",
+      transcript: "I'd give it an 8 out of 10. It's really powerful once you get the hang of it, but it took me a bit to understand all the features...",
+      themes: [],
+      isNew: true,
+      participantId: '483697737',
+    },
+  ],
+};
 
 /**
  * Response table tab button - Inter 16px font
@@ -157,9 +162,11 @@ export function BlockResults({ block }) {
 
   const blockType = BLOCK_TYPES[block.type] || {};
   const responseCount = MOCK_RESPONSES.length;
-  const highlightCount = MOCK_HIGHLIGHTS.length;
-  const newHighlightCount = MOCK_HIGHLIGHTS.filter(h => h.isNew).length;
-  const newResponseCount = MOCK_RESPONSES.filter(r => r.isNew).length;
+  
+  // Get highlights for this specific block type
+  const blockHighlights = MOCK_HIGHLIGHTS_BY_BLOCK_TYPE[block.type] || [];
+  const highlightCount = blockHighlights.length;
+  const newHighlightCount = blockHighlights.filter(h => h.isNew).length;
 
   return (
     <ScrollContainer className="h-full">
@@ -270,16 +277,28 @@ export function BlockResults({ block }) {
           {/* Highlights Tab Content */}
           {activeTab === 'highlights' && (
             <Flex flexDirection="column" gap="MD">
-              {MOCK_HIGHLIGHTS.map((highlight) => (
-                <HighlightCard
-                  key={highlight.id}
-                  insight={highlight.insight}
-                  transcript={highlight.transcript}
-                  themes={highlight.themes}
-                  isNew={highlight.isNew}
-                  participantId={highlight.participantId}
-                />
-              ))}
+              {blockHighlights.length > 0 ? (
+                blockHighlights.map((highlight) => (
+                  <HighlightCard
+                    key={highlight.id}
+                    insight={highlight.insight}
+                    transcript={highlight.transcript}
+                    themes={highlight.themes}
+                    isNew={highlight.isNew}
+                    participantId={highlight.participantId}
+                  />
+                ))
+              ) : (
+                <Flex 
+                  alignItems="center" 
+                  justifyContent="center" 
+                  className="py-12 text-[#6C718C]"
+                >
+                  <Text color="default.main.secondary">
+                    No highlights generated for this block yet
+                  </Text>
+                </Flex>
+              )}
             </Flex>
           )}
         </div>
