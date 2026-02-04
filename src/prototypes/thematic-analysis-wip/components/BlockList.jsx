@@ -30,7 +30,7 @@ const MOCK_PARTICIPANT_LIST = [
  */
 const MOCK_THEME_LIST = [
   { id: 'thematic-analysis', name: 'Thematic analysis', status: 'Not enough sessions' },
-  { id: 'uncategorized', name: 'Uncategorized', highlightCount: 3, sessionCount: '1/1', newCount: 3 },
+  { id: 'uncategorized', name: 'Uncategorized', highlightCount: 6, newCount: 3 },
 ];
 
 /**

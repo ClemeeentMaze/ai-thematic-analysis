@@ -9,7 +9,7 @@
  */
 import { useState } from 'react';
 import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon } from '@framework/components/ariane';
-import { MoreHorizontal, Filter, Play, ChevronLeft, ChevronRight, Table2, Sparkles } from 'lucide-react';
+import { MoreHorizontal, Filter, Play, ChevronLeft, ChevronRight, Table2, Highlighter } from 'lucide-react';
 import { BLOCK_TYPES } from '../data';
 import { HighlightCard } from './HighlightCard';
 
@@ -100,6 +100,22 @@ const MOCK_HIGHLIGHTS_BY_BLOCK_TYPE = {
       isNew: true,
       participantId: '483697736',
     },
+    {
+      id: 'h6',
+      insight: "The navigation flow was described as intuitive and easy to follow, with clear visual hierarchy.",
+      transcript: "I really liked how the navigation was laid out. Everything felt like it was where I expected it to be...",
+      themes: ['Navigation'],
+      isNew: false,
+      participantId: '483697738',
+    },
+    {
+      id: 'h7',
+      insight: "Mobile responsiveness was praised, with the layout adapting well to smaller screens.",
+      transcript: "Even on my phone, the experience was smooth. The buttons were easy to tap and nothing felt cramped...",
+      themes: ['Mobile UX'],
+      isNew: false,
+      participantId: '483697739',
+    },
   ],
   scale: [
     {
@@ -109,6 +125,14 @@ const MOCK_HIGHLIGHTS_BY_BLOCK_TYPE = {
       themes: [],
       isNew: true,
       participantId: '483697737',
+    },
+    {
+      id: 'h8',
+      insight: "High satisfaction scores were correlated with users who had prior experience with similar tools.",
+      transcript: "Since I've used similar products before, this felt very familiar. I'd rate it quite highly...",
+      themes: ['User Experience'],
+      isNew: false,
+      participantId: '483697735',
     },
   ],
   input: [
@@ -129,6 +153,14 @@ const MOCK_HIGHLIGHTS_BY_BLOCK_TYPE = {
       participantId: '483697739',
     },
   ],
+};
+
+/**
+ * Get participant IDs that have highlights for a specific block type
+ */
+const getParticipantsWithHighlights = (blockType) => {
+  const highlights = MOCK_HIGHLIGHTS_BY_BLOCK_TYPE[blockType] || [];
+  return new Set(highlights.map(h => h.participantId));
 };
 
 /**
@@ -195,23 +227,29 @@ function VideoThumbnail({ duration }) {
 
 /**
  * Response table row
+ * hasHighlight: shows highlight icon signifier
+ * hideResponse: for context blocks that don't have a response column
  */
-function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, isNew }) {
+function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, hasHighlight = false, hideResponse = false }) {
   return (
-    <div className={`
-      flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50
-      ${isNew ? 'bg-[#FAF5FF]' : ''}
-    `}>
+    <div className="flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50">
       <div className="w-[140px] px-4 relative">
         <VideoThumbnail duration={clipDuration} />
       </div>
       <div className="w-[160px] px-4">
-        <Text className="text-[#0568FD] font-medium">{participantId}</Text>
+        <Flex alignItems="center" gap="XS">
+          <Text className="text-[#0568FD] font-medium">{participantId}</Text>
+          {hasHighlight && (
+            <Highlighter size={14} className="text-[#7C3AED]" />
+          )}
+        </Flex>
       </div>
-      <div className="flex-1 px-4">
-        <Text className="text-neutral-900">{responseValue}</Text>
-      </div>
-      <div className="w-[180px] px-4">
+      {!hideResponse && (
+        <div className="flex-1 px-4">
+          <Text className="text-neutral-900">{responseValue}</Text>
+        </div>
+      )}
+      <div className={`${hideResponse ? 'flex-1' : 'w-[180px]'} px-4`}>
         <Text color="default.main.secondary">{respondedAt}</Text>
       </div>
       <div className="w-[80px] px-4 flex justify-center">
@@ -304,7 +342,7 @@ export function BlockResults({ block }) {
                 onClick={() => setActiveTab('all')} 
               />
               <ResponseTab 
-                icon={Sparkles} 
+                icon={Highlighter} 
                 label="Highlights" 
                 count={highlightCount}
                 newCount={newHighlightCount}
@@ -324,22 +362,26 @@ export function BlockResults({ block }) {
               <div className="flex items-center py-3 bg-[#F8F8FB] rounded-t-lg text-xs font-semibold text-[#6C718C] uppercase tracking-wide">
                 <div className="w-[140px] px-4">CLIPS</div>
                 <div className="w-[160px] px-4">PARTICIPANT</div>
-                <div className="flex-1 px-4">RESPONSE</div>
-                <div className="w-[180px] px-4">RESPONDED AT</div>
+                {block.type !== 'context' && <div className="flex-1 px-4">RESPONSE</div>}
+                <div className={`${block.type === 'context' ? 'flex-1' : 'w-[180px]'} px-4`}>RESPONDED AT</div>
                 <div className="w-[80px] px-4 text-center">ACTIONS</div>
               </div>
 
               {/* Table Rows */}
-              {blockResponses.map((response) => (
-                <ResponseRow 
-                  key={response.id}
-                  clipDuration={response.clipDuration}
-                  participantId={response.participantId}
-                  responseValue={response.responseValue}
-                  respondedAt={response.respondedAt}
-                  isNew={response.isNew}
-                />
-              ))}
+              {blockResponses.map((response) => {
+                const participantsWithHighlights = getParticipantsWithHighlights(block.type);
+                return (
+                  <ResponseRow 
+                    key={response.id}
+                    clipDuration={response.clipDuration}
+                    participantId={response.participantId}
+                    responseValue={response.responseValue}
+                    respondedAt={response.respondedAt}
+                    hasHighlight={participantsWithHighlights.has(response.participantId)}
+                    hideResponse={block.type === 'context'}
+                  />
+                );
+              })}
 
               {/* Pagination - using ActionButton/Tertiary */}
               <Flex alignItems="center" justifyContent="center" gap="MD" className="py-4">

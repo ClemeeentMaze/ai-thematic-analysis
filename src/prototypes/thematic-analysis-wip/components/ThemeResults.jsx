@@ -10,6 +10,7 @@ import { HighlightCard } from './HighlightCard';
 
 /**
  * Mock uncategorized highlights - these need to be assigned themes
+ * Mix of new and old highlights
  */
 const MOCK_UNCATEGORIZED_HIGHLIGHTS = [
   {
@@ -35,6 +36,30 @@ const MOCK_UNCATEGORIZED_HIGHLIGHTS = [
     themes: [],
     isNew: true,
     participantId: '483697737',
+  },
+  {
+    id: 'uh4',
+    insight: "The navigation flow was described as intuitive and easy to follow, with clear visual hierarchy.",
+    transcript: "I really liked how the navigation was laid out. Everything felt like it was where I expected it to be...",
+    themes: [],
+    isNew: false,
+    participantId: '483697738',
+  },
+  {
+    id: 'uh5',
+    insight: "Mobile responsiveness was praised, with the layout adapting well to smaller screens.",
+    transcript: "Even on my phone, the experience was smooth. The buttons were easy to tap and nothing felt cramped...",
+    themes: [],
+    isNew: false,
+    participantId: '483697739',
+  },
+  {
+    id: 'uh6',
+    insight: "High satisfaction scores were correlated with users who had prior experience with similar tools.",
+    transcript: "Since I've used similar products before, this felt very familiar. I'd rate it quite highly...",
+    themes: [],
+    isNew: false,
+    participantId: '483697735',
   },
 ];
 

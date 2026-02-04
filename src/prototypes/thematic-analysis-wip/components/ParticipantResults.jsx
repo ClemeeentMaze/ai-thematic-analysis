@@ -6,7 +6,7 @@
  */
 import { useState } from 'react';
 import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon } from '@framework/components/ariane';
-import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Download, Play, Star, Table2, Sparkles, Filter } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Download, Play, Star, Table2, Highlighter, Filter } from 'lucide-react';
 import { BLOCK_TYPES } from '../data';
 import { HighlightCard } from './HighlightCard';
 
@@ -362,7 +362,7 @@ export function ParticipantResults({ blocks = [], selectedParticipantId = 'p1' }
                   onClick={() => setActiveTab('all')} 
                 />
                 <ResponseTab 
-                  icon={Sparkles} 
+                  icon={Highlighter} 
                   label="Highlights" 
                   count={highlightCount}
                   newCount={newHighlightCount}

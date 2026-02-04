@@ -52,17 +52,12 @@ export function ThemeListItem({ theme, isSelected, onSelect }) {
           {/* Status / Count - purple when new highlights */}
           <Flex alignItems="center" gap="XS" className="leading-5">
             {isUncategorized ? (
-              <>
-                <span className={`
-                  px-1.5 py-0.5 rounded text-xs font-medium
-                  ${theme.newCount > 0 ? 'bg-[#7C3AED] text-white' : 'bg-neutral-100 text-[#6C718C]'}
-                `}>
-                  {theme.highlightCount} highlights
-                </span>
-                <Text type="caption" color="default.main.secondary">
-                  • {theme.sessionCount} sessions
-                </Text>
-              </>
+              <span className={`
+                px-1.5 py-0.5 rounded text-xs font-medium
+                ${theme.newCount > 0 ? 'bg-[#7C3AED] text-white' : 'bg-neutral-100 text-[#6C718C]'}
+              `}>
+                {theme.highlightCount} highlights
+              </span>
             ) : (
               <Text type="caption" color="default.main.secondary">
                 {theme.status}
