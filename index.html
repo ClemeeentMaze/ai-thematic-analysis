@@ -5,6 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Thematic Analysis</title>
+    <script>
+      // Handle GitHub Pages SPA redirect from 404.html
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+        // Also handle ?redirect= query parameter
+        var params = new URLSearchParams(location.search);
+        var redirectPath = params.get('redirect');
+        if (redirectPath) {
+          history.replaceState(null, null, redirectPath);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
