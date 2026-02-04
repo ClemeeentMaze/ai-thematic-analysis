@@ -15,22 +15,23 @@ import { BLOCK_TYPES } from '../data';
  * Mock response data
  */
 const MOCK_RESPONSES = [
-  { id: 1, clipDuration: '1:38', participantId: '2712', response: '20 Nov 2023, 06:18 pm' },
-  { id: 2, clipDuration: '0:48', participantId: '2151', response: '18 Nov 2023, 04:18 pm' },
-  { id: 3, clipDuration: '0:57', participantId: '3009', response: '18 Nov 2023, 11:54 am' },
-  { id: 4, clipDuration: '0:52', participantId: '8430', response: '18 Nov 2023, 11:47 am' },
-  { id: 5, clipDuration: '0:23', participantId: '1234', response: '18 Nov 2023, 11:44 pm' },
+  { id: 1, clipDuration: '0:07', participantId: '483697735', responseValue: '8', respondedAt: '17 Dec 2025, 06:22 pm' },
+  { id: 2, clipDuration: '0:12', participantId: '483697736', responseValue: '7', respondedAt: '17 Dec 2025, 05:18 pm' },
+  { id: 3, clipDuration: '0:09', participantId: '483697737', responseValue: '9', respondedAt: '17 Dec 2025, 04:54 pm' },
+  { id: 4, clipDuration: '0:15', participantId: '483697738', responseValue: '6', respondedAt: '17 Dec 2025, 03:47 pm' },
+  { id: 5, clipDuration: '0:08', participantId: '483697739', responseValue: '8', respondedAt: '17 Dec 2025, 02:44 pm' },
 ];
 
 /**
- * Response table tab button
+ * Response table tab button - Inter 16px font
  */
 function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
       className={`
-        flex items-center gap-1.5 px-3 py-2 text-sm font-medium
+        flex items-center gap-2 px-3 py-3
+        font-['Inter'] text-[16px] leading-6 font-medium
         transition-all duration-150 cursor-pointer border-b-2
         ${isActive 
           ? 'text-[#0568FD] border-[#0568FD]' 
@@ -38,10 +39,13 @@ function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
         }
       `}
     >
-      <IconComponent size={16} />
+      <IconComponent size={18} />
       <span>{label}</span>
       {count !== undefined && (
-        <span className={`text-xs ${isActive ? 'text-[#0568FD]' : 'text-[#9597b0]'}`}>
+        <span className={`
+          ml-1 px-1.5 py-0.5 rounded text-sm font-medium
+          ${isActive ? 'bg-[#E8F4FF] text-[#0568FD]' : 'bg-neutral-100 text-[#6C718C]'}
+        `}>
           {count}
         </span>
       )}
@@ -50,13 +54,24 @@ function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
 }
 
 /**
- * Clip badge with play icon and duration
+ * Video thumbnail with play overlay and duration badge
  */
-function ClipBadge({ duration }) {
+function VideoThumbnail({ duration }) {
   return (
-    <div className="flex items-center gap-1 bg-[#2a2a2a] text-white text-xs font-medium px-2 py-1.5 rounded">
-      <Play size={12} fill="white" />
-      <span>{duration}</span>
+    <div className="relative w-[100px] h-[56px] rounded-lg overflow-hidden bg-neutral-300">
+      {/* Placeholder thumbnail */}
+      <div className="absolute inset-0 bg-gradient-to-br from-neutral-400 to-neutral-500" />
+      {/* Play button overlay */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
+          <Play size={14} className="text-neutral-700 ml-0.5" fill="currentColor" />
+        </div>
+      </div>
+      {/* Duration badge */}
+      <div className="absolute bottom-1 right-1 flex items-center gap-1 bg-[#2a2a2a]/80 text-white text-xs font-medium px-1.5 py-0.5 rounded">
+        <Play size={10} fill="white" />
+        <span>{duration}</span>
+      </div>
     </div>
   );
 }
@@ -64,17 +79,20 @@ function ClipBadge({ duration }) {
 /**
  * Response table row
  */
-function ResponseRow({ clipDuration, participantId, response }) {
+function ResponseRow({ clipDuration, participantId, responseValue, respondedAt }) {
   return (
     <div className="flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50">
-      <div className="w-[120px] px-4">
-        <ClipBadge duration={clipDuration} />
+      <div className="w-[140px] px-4">
+        <VideoThumbnail duration={clipDuration} />
       </div>
-      <div className="w-[120px] px-4">
+      <div className="w-[160px] px-4">
         <Text className="text-[#0568FD] font-medium">{participantId}</Text>
       </div>
       <div className="flex-1 px-4">
-        <Text color="default.main.secondary">{response}</Text>
+        <Text className="text-neutral-900">{responseValue}</Text>
+      </div>
+      <div className="w-[180px] px-4">
+        <Text color="default.main.secondary">{respondedAt}</Text>
       </div>
       <div className="w-[80px] px-4 flex justify-center">
         <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} />
@@ -171,12 +189,13 @@ export function BlockResults({ block }) {
             </ActionButton>
           </Flex>
 
-          {/* Table Header */}
-          <div className="flex items-center py-2 border-b border-[rgba(108,113,140,0.16)] text-xs font-semibold text-[#6C718C] uppercase tracking-wide">
-            <div className="w-[100px] px-4">Clips</div>
-            <div className="w-[120px] px-4">Participant</div>
-            <div className="flex-1 px-4">Response</div>
-            <div className="w-[80px] px-4 text-center">Actions</div>
+          {/* Table Header - grey background */}
+          <div className="flex items-center py-3 bg-[#F8F8FB] rounded-t-lg text-xs font-semibold text-[#6C718C] uppercase tracking-wide">
+            <div className="w-[140px] px-4">CLIPS</div>
+            <div className="w-[160px] px-4">PARTICIPANT</div>
+            <div className="flex-1 px-4">RESPONSE</div>
+            <div className="w-[180px] px-4">RESPONDED AT</div>
+            <div className="w-[80px] px-4 text-center">ACTIONS</div>
           </div>
 
           {/* Table Rows */}
@@ -185,21 +204,18 @@ export function BlockResults({ block }) {
               key={response.id}
               clipDuration={response.clipDuration}
               participantId={response.participantId}
-              response={response.response}
+              responseValue={response.responseValue}
+              respondedAt={response.respondedAt}
             />
           ))}
 
-          {/* Pagination */}
+          {/* Pagination - using ActionButton/Tertiary */}
           <Flex alignItems="center" justifyContent="center" gap="MD" className="py-4">
-            <button className="p-2 hover:bg-neutral-100 rounded cursor-pointer">
-              <ChevronLeft size={20} className="text-[#6C718C]" />
-            </button>
+            <ActionButton emphasis="tertiary" size="SM" icon={<ChevronLeft size={16} />} />
             <Text color="default.main.secondary" className="text-sm">
               Page 1 of 2
             </Text>
-            <button className="p-2 hover:bg-neutral-100 rounded cursor-pointer">
-              <ChevronRight size={20} className="text-[#6C718C]" />
-            </button>
+            <ActionButton emphasis="tertiary" size="SM" icon={<ChevronRight size={16} />} />
           </Flex>
         </div>
       </Flex>

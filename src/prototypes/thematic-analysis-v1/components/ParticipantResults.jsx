@@ -35,14 +35,15 @@ function VideoPlayer({ thumbnail, duration }) {
 }
 
 /**
- * Response tab button (underline style like Results page)
+ * Response tab button - Inter 16px font (matching Results page)
  */
 function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
       className={`
-        flex items-center gap-1.5 px-3 py-2 text-sm font-medium
+        flex items-center gap-2 px-3 py-3
+        font-['Inter'] text-[16px] leading-6 font-medium
         transition-all duration-150 cursor-pointer border-b-2
         ${isActive 
           ? 'text-[#0568FD] border-[#0568FD]' 
@@ -50,10 +51,13 @@ function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
         }
       `}
     >
-      <IconComponent size={16} />
+      <IconComponent size={18} />
       <span>{label}</span>
       {count !== undefined && (
-        <span className={`text-xs ${isActive ? 'text-[#0568FD]' : 'text-[#9597b0]'}`}>
+        <span className={`
+          ml-1 px-1.5 py-0.5 rounded text-sm font-medium
+          ${isActive ? 'bg-[#E8F4FF] text-[#0568FD]' : 'bg-neutral-100 text-[#6C718C]'}
+        `}>
           {count}
         </span>
       )}
