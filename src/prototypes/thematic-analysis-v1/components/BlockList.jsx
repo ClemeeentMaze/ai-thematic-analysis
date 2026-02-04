@@ -56,9 +56,9 @@ export function BlockList({ blocks, selectedBlockId, onSelectBlock }) {
         />
         <TabButton 
           icon={Film} 
-          label="Reels" 
-          isActive={activeTab === 'reels'} 
-          onClick={() => setActiveTab('reels')} 
+          label="Themes" 
+          isActive={activeTab === 'themes'} 
+          onClick={() => setActiveTab('themes')} 
         />
       </Flex>
 
