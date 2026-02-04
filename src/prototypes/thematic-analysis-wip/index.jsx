@@ -195,7 +195,7 @@ function ThematicAnalysisV1() {
           Flex: 1 (grows to fill remaining space)
         */}
         <Box className="flex-1 h-full bg-white">
-          {activeTab === 'results' && <BlockResults block={selectedBlock} isViewed={viewedBlocks.has(selectedBlock?.id)} />}
+          {activeTab === 'results' && <BlockResults block={selectedBlock} isViewed={viewedBlocks.has(selectedBlock?.id)} generatedThemes={generatedThemes} />}
           {activeTab === 'participants' && <ParticipantResults blocks={visibleBlocks} selectedParticipantId={selectedParticipantId} />}
           {activeTab === 'themes' && <ThemeResults theme={selectedTheme} isViewed={selectedThemeId === 'uncategorized' ? uncategorizedViewed : false} onAnalysisComplete={handleAnalysisComplete} />}
         </Box>

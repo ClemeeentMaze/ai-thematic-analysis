@@ -9,7 +9,7 @@
  */
 import { useState } from 'react';
 import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon } from '@framework/components/ariane';
-import { MoreHorizontal, Filter, Play, ChevronLeft, ChevronRight, Table2, Highlighter } from 'lucide-react';
+import { MoreHorizontal, Filter, Play, ChevronLeft, ChevronRight, Table2, Highlighter, Tag, Info, Plus } from 'lucide-react';
 import { BLOCK_TYPES } from '../data';
 import { HighlightCard } from './HighlightCard';
 
@@ -260,11 +260,44 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, 
 }
 
 /**
+ * Theme row for the themes table
+ */
+function ThemeRow({ theme, frequency, percentage }) {
+  return (
+    <div className="flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50 group">
+      <div className="flex-1 px-4">
+        <Flex alignItems="center" gap="SM">
+          <div 
+            className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: `${theme.color}15` }}
+          >
+            <Tag size={14} style={{ color: theme.color }} />
+          </div>
+          <Text className="text-neutral-900">{theme.name}</Text>
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 bg-neutral-900 text-white text-xs rounded">
+            View details
+          </span>
+        </Flex>
+      </div>
+      <div className="w-[200px] px-4">
+        <Text className="text-neutral-900">
+          {frequency} <span className="text-[#6C718C]">({percentage}%)</span>
+        </Text>
+      </div>
+      <div className="w-[80px] px-4 flex justify-end">
+        <ActionButton emphasis="tertiary" size="SM" icon={<MoreHorizontal size={16} />} iconOnly />
+      </div>
+    </div>
+  );
+}
+
+/**
  * BlockResults - Main results display component
  * @param {Object} props.block - The block to display
  * @param {boolean} props.isViewed - Whether the block has been viewed (hides new highlights indicators)
+ * @param {Array} props.generatedThemes - AI-generated themes after analysis
  */
-export function BlockResults({ block, isViewed = false }) {
+export function BlockResults({ block, isViewed = false, generatedThemes = [] }) {
   const [activeTab, setActiveTab] = useState('all');
   
   if (!block) {
@@ -286,6 +319,10 @@ export function BlockResults({ block, isViewed = false }) {
   const highlightCount = blockHighlights.length;
   // Hide "new" indicators if the block has been viewed
   const newHighlightCount = isViewed ? 0 : blockHighlights.filter(h => h.isNew).length;
+  
+  // Check if this block type has highlights (and thus should show themes)
+  const hasHighlights = highlightCount > 0;
+  const showThemesSection = hasHighlights && generatedThemes.length > 0;
 
   return (
     <ScrollContainer className="h-full">
@@ -330,6 +367,48 @@ export function BlockResults({ block, isViewed = false }) {
 
         {/* Chart Placeholder */}
         <Box className="bg-[#f8f8fb] rounded-lg h-[200px] mb-8" />
+
+        {/* Themes Section - only shown when analysis is complete and block has highlights */}
+        {showThemesSection && (
+          <div className="mb-8">
+            <Flex alignItems="center" justifyContent="space-between" className="mb-4">
+              <Flex alignItems="center" gap="SM">
+                <Heading level={3}>Themes</Heading>
+                <button className="text-[#6C718C] hover:text-[#535a74]">
+                  <Info size={16} />
+                </button>
+              </Flex>
+              <Flex alignItems="center" gap="SM">
+                <ActionButton emphasis="secondary" size="SM" icon={<Plus size={16} />}>
+                  Create theme
+                </ActionButton>
+                <ActionButton emphasis="primary" size="SM" icon={<Tag size={16} />}>
+                  Find themes with AI
+                </ActionButton>
+              </Flex>
+            </Flex>
+
+            {/* Themes Table */}
+            <div className="border border-[rgba(108,113,140,0.16)] rounded-lg overflow-hidden">
+              {/* Table Header */}
+              <div className="flex items-center py-3 bg-[#F8F8FB] text-xs font-semibold text-[#6C718C] uppercase tracking-wide">
+                <div className="flex-1 px-4">NAME</div>
+                <div className="w-[200px] px-4">FREQUENCY</div>
+                <div className="w-[80px] px-4 text-right">ACTIONS</div>
+              </div>
+
+              {/* Theme Rows - show themes relevant to this block */}
+              {generatedThemes.slice(0, 4).map((theme, index) => (
+                <ThemeRow 
+                  key={theme.id}
+                  theme={theme}
+                  frequency={theme.highlightCount}
+                  percentage={Math.round((theme.highlightCount / 8) * 100)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Responses Section */}
         <div>
