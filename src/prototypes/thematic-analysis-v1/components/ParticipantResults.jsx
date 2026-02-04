@@ -5,61 +5,9 @@
  * Based on Figma: Clip Analysis - Participant view
  */
 import { useState } from 'react';
-import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon, SegmentControl } from '@framework/components/ariane';
-import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Download, Play, Star } from 'lucide-react';
-
-/**
- * Mock participant data
- */
-const MOCK_PARTICIPANTS = [
-  {
-    id: 'participant-1',
-    participantId: '23338',
-    videoDuration: '02:25',
-    videoThumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',
-    responses: [
-      {
-        type: 'mission',
-        icon: 'prototype-test',
-        iconColor: 'primary',
-        title: 'Book a room at the Four Seasons hotel in London',
-        status: 'Direct success',
-        statusColor: 'green',
-        duration: '42.1s',
-        screenshots: [
-          'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=80&h=60&fit=crop',
-          'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=80&h=60&fit=crop',
-          'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=80&h=60&fit=crop',
-          'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=80&h=60&fit=crop',
-        ],
-      },
-      {
-        type: 'transcript',
-        timestamp: '0:00',
-        text: "Okay, let's see... looking for Four Seasons in London. Hmm, I'll type it in the search bar... yeah, there it is.",
-      },
-      {
-        type: 'transcript',
-        timestamp: '0:30',
-        text: "Just checking the dates... alright, selecting next weekend.",
-        highlight: 'dates',
-      },
-      {
-        type: 'transcript',
-        timestamp: '1:28',
-        text: "I'll confirm the booking anyway—it looks like all the details are correct. Done. That was pretty straightforward overall.",
-      },
-      {
-        type: 'rating',
-        icon: 'star',
-        iconColor: 'yellow',
-        question: 'How would you rate the ease of use?',
-        rating: 4,
-        maxRating: 5,
-      },
-    ],
-  },
-];
+import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon } from '@framework/components/ariane';
+import { ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Download, Play, Star, Table2, Sparkles } from 'lucide-react';
+import { BLOCK_TYPES } from '../data';
 
 /**
  * Video player component with play button overlay
@@ -87,35 +35,131 @@ function VideoPlayer({ thumbnail, duration }) {
 }
 
 /**
- * Mission/Task response card
+ * Response tab button (underline style like Results page)
  */
-function MissionCard({ icon, iconColor, title, status, statusColor, duration, screenshots }) {
+function ResponseTab({ icon: IconComponent, label, count, isActive, onClick }) {
   return (
-    <div className="p-4 rounded-lg border border-[#0568FD] bg-[#F0FAFF]">
+    <button
+      onClick={onClick}
+      className={`
+        flex items-center gap-1.5 px-3 py-2 text-sm font-medium
+        transition-all duration-150 cursor-pointer border-b-2
+        ${isActive 
+          ? 'text-[#0568FD] border-[#0568FD]' 
+          : 'text-[#6C718C] border-transparent hover:text-[#535a74]'
+        }
+      `}
+    >
+      <IconComponent size={16} />
+      <span>{label}</span>
+      {count !== undefined && (
+        <span className={`text-xs ${isActive ? 'text-[#0568FD]' : 'text-[#9597b0]'}`}>
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
+
+/**
+ * Block response card - displays a block with participant's response
+ */
+function BlockResponseCard({ block, isHighlighted = false }) {
+  const blockType = BLOCK_TYPES[block.type] || {};
+  
+  // Mock response data per block type
+  const getMockResponse = () => {
+    switch (block.type) {
+      case 'prototype_test':
+        return {
+          status: 'Direct success',
+          statusColor: 'green',
+          duration: '42.1s',
+          screenshots: [
+            'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=80&h=60&fit=crop',
+            'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=80&h=60&fit=crop',
+            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=80&h=60&fit=crop',
+          ],
+        };
+      case 'scale':
+        return { rating: 4, maxRating: 5 };
+      case 'multiple_choice':
+        return { selected: 'Option B' };
+      case 'yesno':
+        return { answer: 'Yes' };
+      case 'input':
+      case 'simple_input':
+        return { text: 'The booking process was straightforward and easy to follow.' };
+      default:
+        return { text: 'Response recorded' };
+    }
+  };
+
+  const response = getMockResponse();
+
+  return (
+    <div className={`p-4 rounded-lg border ${isHighlighted ? 'border-[#0568FD] bg-[#F0FAFF]' : 'border-[rgba(108,113,140,0.28)] bg-white'}`}>
       <Flex alignItems="flex-start" gap="SM" className="mb-3">
-        <IconFigure name={icon} color={iconColor} size="SM" mode="dark" shape="squared" />
+        <IconFigure 
+          name={blockType.iconName || 'block'} 
+          color={blockType.arianeColor || 'neutral'} 
+          size="SM" 
+          mode="dark" 
+          shape="squared" 
+        />
       </Flex>
-      <Text className="font-semibold text-neutral-900 mb-2">{title}</Text>
-      <Flex alignItems="center" gap="SM" className="mb-3">
-        <span className={`w-2 h-2 rounded-full ${statusColor === 'green' ? 'bg-green-500' : 'bg-neutral-400'}`} />
-        <Text type="caption" color="default.main.secondary">{status}</Text>
-        <Text type="caption" color="default.main.secondary">•</Text>
-        <Flex alignItems="center" gap="XS">
-          <Icon name="clock" size={14} className="text-[#6C718C]" />
-          <Text type="caption" color="default.main.secondary">{duration}</Text>
-        </Flex>
-      </Flex>
-      {screenshots && screenshots.length > 0 && (
+      <Text className="font-semibold text-neutral-900 mb-2">{block.title}</Text>
+      
+      {/* Response content based on block type */}
+      {block.type === 'prototype_test' && (
+        <>
+          <Flex alignItems="center" gap="SM" className="mb-3">
+            <span className={`w-2 h-2 rounded-full ${response.statusColor === 'green' ? 'bg-green-500' : 'bg-neutral-400'}`} />
+            <Text type="caption" color="default.main.secondary">{response.status}</Text>
+            <Text type="caption" color="default.main.secondary">•</Text>
+            <Flex alignItems="center" gap="XS">
+              <Icon name="clock" size={14} className="text-[#6C718C]" />
+              <Text type="caption" color="default.main.secondary">{response.duration}</Text>
+            </Flex>
+          </Flex>
+          {response.screenshots && (
+            <Flex gap="XS">
+              {response.screenshots.map((src, idx) => (
+                <img 
+                  key={idx}
+                  src={src} 
+                  alt={`Screenshot ${idx + 1}`}
+                  className="w-16 h-12 rounded object-cover border border-neutral-200"
+                />
+              ))}
+            </Flex>
+          )}
+        </>
+      )}
+      
+      {block.type === 'scale' && (
         <Flex gap="XS">
-          {screenshots.map((src, idx) => (
-            <img 
+          {Array.from({ length: response.maxRating }).map((_, idx) => (
+            <Star 
               key={idx}
-              src={src} 
-              alt={`Screenshot ${idx + 1}`}
-              className="w-16 h-12 rounded object-cover border border-neutral-200"
+              size={24} 
+              className={idx < response.rating ? 'text-amber-400' : 'text-neutral-300'}
+              fill={idx < response.rating ? 'currentColor' : 'none'}
             />
           ))}
         </Flex>
+      )}
+      
+      {block.type === 'multiple_choice' && (
+        <Text color="default.main.secondary">{response.selected}</Text>
+      )}
+      
+      {block.type === 'yesno' && (
+        <Text color="default.main.secondary">{response.answer}</Text>
+      )}
+      
+      {(block.type === 'input' || block.type === 'simple_input' || block.type === 'context') && (
+        <Text color="default.main.secondary">{response.text}</Text>
       )}
     </div>
   );
@@ -145,30 +189,6 @@ function TranscriptEntry({ timestamp, text, highlight }) {
 }
 
 /**
- * Rating response with stars
- */
-function RatingCard({ icon, iconColor, question, rating, maxRating }) {
-  return (
-    <div className="p-4 rounded-lg border border-[rgba(108,113,140,0.28)] bg-white">
-      <Flex alignItems="flex-start" gap="SM" className="mb-3">
-        <IconFigure name={icon} color={iconColor} size="SM" mode="dark" shape="squared" />
-      </Flex>
-      <Text className="font-medium text-neutral-900 mb-3">{question}</Text>
-      <Flex gap="XS">
-        {Array.from({ length: maxRating }).map((_, idx) => (
-          <Star 
-            key={idx}
-            size={24} 
-            className={idx < rating ? 'text-amber-400' : 'text-neutral-300'}
-            fill={idx < rating ? 'currentColor' : 'none'}
-          />
-        ))}
-      </Flex>
-    </div>
-  );
-}
-
-/**
  * Navigation button (prev/next)
  */
 function NavButton({ direction, onClick }) {
@@ -183,17 +203,29 @@ function NavButton({ direction, onClick }) {
   );
 }
 
-const RESPONSE_TAB_OPTIONS = [
-  { id: 'all', label: 'All responses' },
-  { id: 'highlights', label: 'Highlights' },
+/**
+ * Mock transcript data for the participant
+ */
+const MOCK_TRANSCRIPTS = [
+  { timestamp: '0:00', text: "Okay, let's see... looking for Four Seasons in London. Hmm, I'll type it in the search bar... yeah, there it is." },
+  { timestamp: '0:30', text: "Just checking the dates... alright, selecting next weekend.", highlight: 'dates' },
+  { timestamp: '1:28', text: "I'll confirm the booking anyway—it looks like all the details are correct. Done. That was pretty straightforward overall." },
 ];
 
 /**
  * ParticipantResults - Main component
  */
-export function ParticipantResults({ participantIndex = 0 }) {
+export function ParticipantResults({ blocks = [] }) {
   const [activeTab, setActiveTab] = useState('all');
-  const participant = MOCK_PARTICIPANTS[participantIndex] || MOCK_PARTICIPANTS[0];
+  
+  // Mock participant data
+  const participant = {
+    participantId: '23338',
+    videoDuration: '02:25',
+    videoThumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop',
+  };
+  
+  const highlightCount = 4;
 
   return (
     <ScrollContainer className="h-full">
@@ -255,60 +287,50 @@ export function ParticipantResults({ participantIndex = 0 }) {
 
             {/* Right Column - Responses */}
             <Box className="flex-1 min-w-0">
-              {/* Response Tabs */}
+              {/* Response Tabs (underline style like Results page) */}
               <Flex className="mb-4 border-b border-[rgba(108,113,140,0.16)]">
-                <SegmentControl
-                  options={RESPONSE_TAB_OPTIONS.map(opt => ({
-                    ...opt,
-                    label: opt.id === 'highlights' ? `${opt.label} 4` : opt.label,
-                  }))}
-                  selected={activeTab}
-                  onChange={(id) => setActiveTab(id)}
-                  size="SM"
+                <ResponseTab 
+                  icon={Table2} 
+                  label="All responses" 
+                  isActive={activeTab === 'all'} 
+                  onClick={() => setActiveTab('all')} 
+                />
+                <ResponseTab 
+                  icon={Sparkles} 
+                  label="Highlights" 
+                  count={highlightCount}
+                  isActive={activeTab === 'highlights'} 
+                  onClick={() => setActiveTab('highlights')} 
                 />
               </Flex>
 
-              {/* Responses List */}
+              {/* Responses List - shows blocks from the block list */}
               <Flex flexDirection="column" gap="MD">
-                {participant.responses.map((response, idx) => {
-                  if (response.type === 'mission') {
-                    return (
-                      <MissionCard
-                        key={idx}
-                        icon={response.icon}
-                        iconColor={response.iconColor}
-                        title={response.title}
-                        status={response.status}
-                        statusColor={response.statusColor}
-                        duration={response.duration}
-                        screenshots={response.screenshots}
-                      />
-                    );
-                  }
-                  if (response.type === 'transcript') {
-                    return (
+                {blocks.length > 0 ? (
+                  <>
+                    {/* First block highlighted */}
+                    {blocks[0] && (
+                      <BlockResponseCard block={blocks[0]} isHighlighted />
+                    )}
+                    
+                    {/* Transcript entries */}
+                    {MOCK_TRANSCRIPTS.map((transcript, idx) => (
                       <TranscriptEntry
-                        key={idx}
-                        timestamp={response.timestamp}
-                        text={response.text}
-                        highlight={response.highlight}
+                        key={`transcript-${idx}`}
+                        timestamp={transcript.timestamp}
+                        text={transcript.text}
+                        highlight={transcript.highlight}
                       />
-                    );
-                  }
-                  if (response.type === 'rating') {
-                    return (
-                      <RatingCard
-                        key={idx}
-                        icon={response.icon}
-                        iconColor={response.iconColor}
-                        question={response.question}
-                        rating={response.rating}
-                        maxRating={response.maxRating}
-                      />
-                    );
-                  }
-                  return null;
-                })}
+                    ))}
+                    
+                    {/* Remaining blocks */}
+                    {blocks.slice(1).map((block) => (
+                      <BlockResponseCard key={block.id} block={block} />
+                    ))}
+                  </>
+                ) : (
+                  <Text color="default.main.secondary">No blocks to display</Text>
+                )}
               </Flex>
             </Box>
           </Flex>
