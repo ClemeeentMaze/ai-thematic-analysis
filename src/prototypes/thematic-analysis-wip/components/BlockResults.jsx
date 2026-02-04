@@ -14,14 +14,68 @@ import { BLOCK_TYPES } from '../data';
 import { HighlightCard } from './HighlightCard';
 
 /**
- * Mock response data
+ * Mock response data by block type
+ * Each block type has realistic response values
  */
-const MOCK_RESPONSES = [
-  { id: 1, clipDuration: '0:07', participantId: '483697735', responseValue: '8', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
-  { id: 2, clipDuration: '0:12', participantId: '483697736', responseValue: '7', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
-  { id: 3, clipDuration: '0:09', participantId: '483697737', responseValue: '9', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
-  { id: 4, clipDuration: '0:15', participantId: '483697738', responseValue: '6', respondedAt: '17 Dec 2025, 03:47 pm' },
-  { id: 5, clipDuration: '0:08', participantId: '483697739', responseValue: '8', respondedAt: '17 Dec 2025, 02:44 pm' },
+const MOCK_RESPONSES_BY_TYPE = {
+  prototype_test: [
+    { id: 1, clipDuration: '1:23', participantId: '483697735', responseValue: 'Task completed - 47s', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '2:05', participantId: '483697736', responseValue: 'Task completed - 1m 12s', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '0:58', participantId: '483697737', responseValue: 'Gave up after 2 attempts', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '1:45', participantId: '483697738', responseValue: 'Task completed - 1m 02s', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:42', participantId: '483697739', responseValue: 'Task completed - 38s', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+  multiple_choice: [
+    { id: 1, clipDuration: '0:15', participantId: '483697735', responseValue: 'Laptop, Phone', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '0:08', participantId: '483697736', responseValue: 'Phone, Tablet', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '0:12', participantId: '483697737', responseValue: 'Laptop, Phone, Tablet', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '0:06', participantId: '483697738', responseValue: 'Phone', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:10', participantId: '483697739', responseValue: 'Laptop', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+  input: [
+    { id: 1, clipDuration: '0:45', participantId: '483697735', responseValue: 'I would add more tooltips to explain what each button does. Some icons are not intuitive.', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '0:38', participantId: '483697736', responseValue: 'The search feature could be more prominent. I had trouble finding it at first.', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '1:02', participantId: '483697737', responseValue: 'Overall great experience! Would love to see keyboard shortcuts for power users.', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '0:28', participantId: '483697738', responseValue: 'Dark mode would be a nice addition.', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:52', participantId: '483697739', responseValue: 'The loading times could be faster when switching between sections.', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+  simple_input: [
+    { id: 1, clipDuration: '0:12', participantId: '483697735', responseValue: 'sarah.johnson@gmail.com', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '0:08', participantId: '483697736', responseValue: 'mike.chen@outlook.com', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '0:15', participantId: '483697737', responseValue: 'emma.wilson@company.co', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '0:10', participantId: '483697738', responseValue: 'alex.kumar@yahoo.com', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:09', participantId: '483697739', responseValue: 'lisa.martinez@work.io', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+  scale: [
+    { id: 1, clipDuration: '0:07', participantId: '483697735', responseValue: '4 / 5', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '0:05', participantId: '483697736', responseValue: '5 / 5', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '0:08', participantId: '483697737', responseValue: '3 / 5', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '0:06', participantId: '483697738', responseValue: '4 / 5', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:04', participantId: '483697739', responseValue: '5 / 5', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+  yesno: [
+    { id: 1, clipDuration: '0:04', participantId: '483697735', responseValue: 'Yes', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '0:03', participantId: '483697736', responseValue: 'No', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '0:05', participantId: '483697737', responseValue: 'Yes', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '0:03', participantId: '483697738', responseValue: 'Yes', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:04', participantId: '483697739', responseValue: 'No', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+  context: [
+    { id: 1, clipDuration: '0:18', participantId: '483697735', responseValue: 'Read context', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+    { id: 2, clipDuration: '0:22', participantId: '483697736', responseValue: 'Read context', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 3, clipDuration: '0:15', participantId: '483697737', responseValue: 'Read context', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+    { id: 4, clipDuration: '0:20', participantId: '483697738', responseValue: 'Read context', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 5, clipDuration: '0:17', participantId: '483697739', responseValue: 'Read context', respondedAt: '17 Dec 2025, 02:44 pm' },
+  ],
+};
+
+// Fallback generic responses
+const MOCK_RESPONSES_DEFAULT = [
+  { id: 1, clipDuration: '0:07', participantId: '483697735', responseValue: 'Response 1', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
+  { id: 2, clipDuration: '0:12', participantId: '483697736', responseValue: 'Response 2', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+  { id: 3, clipDuration: '0:09', participantId: '483697737', responseValue: 'Response 3', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
+  { id: 4, clipDuration: '0:15', participantId: '483697738', responseValue: 'Response 4', respondedAt: '17 Dec 2025, 03:47 pm' },
+  { id: 5, clipDuration: '0:08', participantId: '483697739', responseValue: 'Response 5', respondedAt: '17 Dec 2025, 02:44 pm' },
 ];
 
 /**
@@ -182,7 +236,10 @@ export function BlockResults({ block }) {
   }
 
   const blockType = BLOCK_TYPES[block.type] || {};
-  const responseCount = MOCK_RESPONSES.length;
+  
+  // Get responses for this specific block type
+  const blockResponses = MOCK_RESPONSES_BY_TYPE[block.type] || MOCK_RESPONSES_DEFAULT;
+  const responseCount = blockResponses.length;
   
   // Get highlights for this specific block type
   const blockHighlights = MOCK_HIGHLIGHTS_BY_BLOCK_TYPE[block.type] || [];
@@ -273,7 +330,7 @@ export function BlockResults({ block }) {
               </div>
 
               {/* Table Rows */}
-              {MOCK_RESPONSES.map((response) => (
+              {blockResponses.map((response) => (
                 <ResponseRow 
                   key={response.id}
                   clipDuration={response.clipDuration}
