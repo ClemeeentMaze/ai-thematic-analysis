@@ -391,7 +391,7 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
                 </div>
                 <ActionButton 
                   emphasis="secondary" 
-                  size="MD" 
+                  size="SM" 
                   icon={<Sparkles size={16} />}
                   onClick={onNavigateToThemes}
                 >
