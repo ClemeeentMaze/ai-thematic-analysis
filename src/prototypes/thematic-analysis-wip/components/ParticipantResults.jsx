@@ -73,8 +73,11 @@ function VideoPlayer({ thumbnail, duration }) {
 
 /**
  * Response tab button - Inter 16px font (matching Results page)
+ * Badge logic: 0 highlights = grey "0", N highlights = grey "N", N highlights with new = purple "N"
  */
 function ResponseTab({ icon: IconComponent, label, count, newCount, isActive, onClick }) {
+  const hasNewHighlights = newCount !== undefined && newCount > 0;
+  
   return (
     <button
       onClick={onClick}
@@ -92,15 +95,15 @@ function ResponseTab({ icon: IconComponent, label, count, newCount, isActive, on
       <span>{label}</span>
       {count !== undefined && (
         <span className={`
-          ml-1 px-1.5 py-0.5 rounded text-sm font-medium
-          ${isActive ? 'bg-[#E8F4FF] text-[#0568FD]' : 'bg-neutral-100 text-[#6C718C]'}
+          ml-1 px-1.5 py-0.5 rounded text-sm font-medium flex items-center gap-1
+          ${hasNewHighlights 
+            ? 'bg-[#7C3AED] text-white' 
+            : isActive 
+              ? 'bg-[#E8F4FF] text-[#0568FD]' 
+              : 'bg-neutral-100 text-[#6C718C]'
+          }
         `}>
           {count}
-        </span>
-      )}
-      {newCount !== undefined && newCount > 0 && (
-        <span className="ml-1 px-1.5 py-0.5 rounded text-sm font-medium bg-[#7C3AED] text-white">
-          {newCount} new
         </span>
       )}
     </button>

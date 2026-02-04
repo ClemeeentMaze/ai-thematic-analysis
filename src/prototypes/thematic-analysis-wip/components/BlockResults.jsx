@@ -57,12 +57,33 @@ const MOCK_HIGHLIGHTS_BY_BLOCK_TYPE = {
       participantId: '483697737',
     },
   ],
+  input: [
+    {
+      id: 'h4',
+      insight: "Users consistently mention wanting better onboarding documentation and tooltips for complex features.",
+      transcript: "I think the main improvement would be having more tooltips or a guided tour when you first start. Some features are hidden and not obvious...",
+      themes: [],
+      isNew: true,
+      participantId: '483697738',
+    },
+    {
+      id: 'h5',
+      insight: "Multiple participants expressed desire for keyboard shortcuts to speed up their workflow.",
+      transcript: "If there were keyboard shortcuts for the common actions, that would save me a lot of time. Right now I have to click through menus...",
+      themes: [],
+      isNew: true,
+      participantId: '483697739',
+    },
+  ],
 };
 
 /**
  * Response table tab button - Inter 16px font
+ * Badge logic: 0 highlights = grey "0", N highlights = grey "N", N highlights with new = purple "N" with sparkle
  */
 function ResponseTab({ icon: IconComponent, label, count, newCount, isActive, onClick }) {
+  const hasNewHighlights = newCount !== undefined && newCount > 0;
+  
   return (
     <button
       onClick={onClick}
@@ -80,15 +101,15 @@ function ResponseTab({ icon: IconComponent, label, count, newCount, isActive, on
       <span>{label}</span>
       {count !== undefined && (
         <span className={`
-          ml-1 px-1.5 py-0.5 rounded text-sm font-medium
-          ${isActive ? 'bg-[#E8F4FF] text-[#0568FD]' : 'bg-neutral-100 text-[#6C718C]'}
+          ml-1 px-1.5 py-0.5 rounded text-sm font-medium flex items-center gap-1
+          ${hasNewHighlights 
+            ? 'bg-[#7C3AED] text-white' 
+            : isActive 
+              ? 'bg-[#E8F4FF] text-[#0568FD]' 
+              : 'bg-neutral-100 text-[#6C718C]'
+          }
         `}>
           {count}
-        </span>
-      )}
-      {newCount !== undefined && newCount > 0 && (
-        <span className="ml-1 px-1.5 py-0.5 rounded text-sm font-medium bg-[#7C3AED] text-white">
-          {newCount} new
         </span>
       )}
     </button>

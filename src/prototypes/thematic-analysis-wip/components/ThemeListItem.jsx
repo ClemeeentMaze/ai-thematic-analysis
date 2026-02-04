@@ -44,29 +44,31 @@ export function ThemeListItem({ theme, isSelected, onSelect }) {
         
         {/* Theme Content */}
         <Box className="flex-1 min-w-0 overflow-hidden">
-          {/* Theme Name with new badge */}
-          <Flex alignItems="center" gap="XS">
-            <p className="text-[16px] leading-6 truncate text-black m-0">
-              {theme.name}
-            </p>
-            {theme.newCount > 0 && (
-              <span className="px-1.5 py-0.5 bg-[#7C3AED] text-white text-[10px] font-semibold rounded-full whitespace-nowrap">
-                {theme.newCount} new
-              </span>
+          {/* Theme Name */}
+          <p className="text-[16px] leading-6 truncate text-black m-0">
+            {theme.name}
+          </p>
+          
+          {/* Status / Count - purple when new highlights */}
+          <Flex alignItems="center" gap="XS" className="leading-5">
+            {isUncategorized ? (
+              <>
+                <span className={`
+                  px-1.5 py-0.5 rounded text-xs font-medium
+                  ${theme.newCount > 0 ? 'bg-[#7C3AED] text-white' : 'bg-neutral-100 text-[#6C718C]'}
+                `}>
+                  {theme.highlightCount} highlights
+                </span>
+                <Text type="caption" color="default.main.secondary">
+                  • {theme.sessionCount} sessions
+                </Text>
+              </>
+            ) : (
+              <Text type="caption" color="default.main.secondary">
+                {theme.status}
+              </Text>
             )}
           </Flex>
-          
-          {/* Status / Count */}
-          <Text 
-            type="caption" 
-            color="default.main.secondary"
-            className="leading-5"
-          >
-            {isUncategorized 
-              ? `${theme.highlightCount} highlights • ${theme.sessionCount} sessions`
-              : theme.status
-            }
-          </Text>
         </Box>
       </Flex>
     </Box>

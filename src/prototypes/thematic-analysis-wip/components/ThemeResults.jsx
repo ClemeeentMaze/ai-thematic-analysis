@@ -181,16 +181,20 @@ export function ThemeResults({ theme }) {
         ) : (
           /* Uncategorized view - shows highlights that need themes */
           <Box>
-            {/* Header with count and new badge - purple color */}
+            {/* Header with count - purple when there are new highlights */}
             <Flex alignItems="center" gap="SM" className="mb-6">
+              <span className={`
+                px-2 py-1 rounded text-sm font-medium
+                ${MOCK_UNCATEGORIZED_HIGHLIGHTS.filter(h => h.isNew).length > 0 
+                  ? 'bg-[#7C3AED] text-white' 
+                  : 'bg-neutral-100 text-[#6C718C]'
+                }
+              `}>
+                {MOCK_UNCATEGORIZED_HIGHLIGHTS.length} highlights
+              </span>
               <Text color="default.main.secondary">
-                {MOCK_UNCATEGORIZED_HIGHLIGHTS.length} highlights need to be categorized
+                need to be categorized
               </Text>
-              {MOCK_UNCATEGORIZED_HIGHLIGHTS.filter(h => h.isNew).length > 0 && (
-                <span className="px-2 py-0.5 bg-[#7C3AED] text-white text-xs font-semibold rounded-full">
-                  {MOCK_UNCATEGORIZED_HIGHLIGHTS.filter(h => h.isNew).length} new
-                </span>
-              )}
             </Flex>
 
             {/* Highlight cards */}
