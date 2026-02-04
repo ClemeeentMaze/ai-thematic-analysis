@@ -18,6 +18,7 @@ import { Tag } from 'lucide-react';
 export function ThemeListItem({ theme, isSelected, onSelect }) {
   const isUncategorized = theme.id === 'uncategorized';
   const isGeneratedTheme = theme.color !== undefined;
+  const isThematicAnalysis = theme.id === 'thematic-analysis';
   
   return (
     <Box
@@ -65,6 +66,10 @@ export function ThemeListItem({ theme, isSelected, onSelect }) {
             ) : isGeneratedTheme ? (
               <Text type="caption" color="default.main.secondary">
                 {theme.highlightCount} highlights
+              </Text>
+            ) : isThematicAnalysis && theme.analysisComplete ? (
+              <Text type="caption" className="text-[#10B981] font-medium">
+                Analysis complete
               </Text>
             ) : (
               <Text type="caption" color="default.main.secondary">

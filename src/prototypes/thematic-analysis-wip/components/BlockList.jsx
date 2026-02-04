@@ -125,18 +125,32 @@ export function BlockList({
           ))}
           {activeTab === 'themes' && (
             <>
-              {allThemes.map((theme) => {
+              {allThemes.map((theme, index) => {
                 // Hide new count for uncategorized if it's been viewed
                 const themeWithViewedState = theme.id === 'uncategorized' && uncategorizedViewed
                   ? { ...theme, newCount: 0 }
                   : theme;
+                
+                // Add analysisComplete status to thematic-analysis theme
+                const themeWithStatus = theme.id === 'thematic-analysis'
+                  ? { ...themeWithViewedState, analysisComplete }
+                  : themeWithViewedState;
+                
+                // Check if this is the thematic-analysis item (to add divider after)
+                const isThematicAnalysis = theme.id === 'thematic-analysis';
+                
                 return (
-                  <ThemeListItem
-                    key={theme.id}
-                    theme={themeWithViewedState}
-                    isSelected={selectedThemeId === theme.id}
-                    onSelect={onSelectTheme}
-                  />
+                  <div key={theme.id}>
+                    <ThemeListItem
+                      theme={themeWithStatus}
+                      isSelected={selectedThemeId === theme.id}
+                      onSelect={onSelectTheme}
+                    />
+                    {/* Divider after Thematic analysis */}
+                    {isThematicAnalysis && (
+                      <div className="my-3 border-b border-[rgba(108,113,140,0.16)]" />
+                    )}
+                  </div>
                 );
               })}
               {/* Add theme button */}
