@@ -283,8 +283,8 @@ export function ParticipantResults({ blocks = [] }) {
               </ActionButton>
               <NavButton direction="prev" onClick={() => {}} />
               <NavButton direction="next" onClick={() => {}} />
-              <ActionButton emphasis="tertiary" size="SM" icon={<Download size={16} />} />
-              <ActionButton emphasis="tertiary" size="SM" icon={<MoreHorizontal size={16} />} />
+              <ActionButton emphasis="tertiary" size="SM" icon={<Download size={16} />} iconOnly />
+              <ActionButton emphasis="tertiary" size="SM" icon={<MoreHorizontal size={16} />} iconOnly />
             </Flex>
           </Flex>
 
@@ -297,7 +297,7 @@ export function ParticipantResults({ blocks = [] }) {
                 duration={participant.videoDuration} 
               />
               <Flex justifyContent="flex-end" gap="SM" className="mt-3">
-                <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} />
+                <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
                 <ActionButton emphasis="secondary" size="SM" icon={<Icon name="edit" />}>
                   Highlight
                 </ActionButton>

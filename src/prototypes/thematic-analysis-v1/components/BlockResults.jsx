@@ -95,7 +95,7 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt }
         <Text color="default.main.secondary">{respondedAt}</Text>
       </div>
       <div className="w-[80px] px-4 flex justify-center">
-        <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} />
+        <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
       </div>
     </div>
   );
@@ -211,11 +211,11 @@ export function BlockResults({ block }) {
 
           {/* Pagination - using ActionButton/Tertiary */}
           <Flex alignItems="center" justifyContent="center" gap="MD" className="py-4">
-            <ActionButton emphasis="tertiary" size="SM" icon={<ChevronLeft size={16} />} />
+            <ActionButton emphasis="tertiary" size="SM" icon={<ChevronLeft size={16} />} iconOnly />
             <Text color="default.main.secondary" className="text-sm">
               Page 1 of 2
             </Text>
-            <ActionButton emphasis="tertiary" size="SM" icon={<ChevronRight size={16} />} />
+            <ActionButton emphasis="tertiary" size="SM" icon={<ChevronRight size={16} />} iconOnly />
           </Flex>
         </div>
       </Flex>

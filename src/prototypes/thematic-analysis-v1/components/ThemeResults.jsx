@@ -142,7 +142,7 @@ export function ThemeResults({ theme }) {
 
             {/* Start Analysis Button - positioned at bottom right */}
             <Flex justifyContent="flex-end" className="mt-auto pt-8">
-              <CTAButton emphasis="secondary" size="MD">
+              <CTAButton emphasis="tertiary" size="MD">
                 Start Analysis
               </CTAButton>
             </Flex>

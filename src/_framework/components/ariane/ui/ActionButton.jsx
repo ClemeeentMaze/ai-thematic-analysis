@@ -80,7 +80,7 @@ const actionButtonVariants = cva(
         false: '',
       },
       iconOnly: {
-        true: 'min-w-0',
+        true: 'min-w-0 !px-0',
         false: '',
       },
       fullWidth: {
@@ -134,6 +134,18 @@ const actionButtonVariants = cva(
           'bg-blue-100 text-blue-700',
           'shadow-[inset_0px_0px_0px_0.5px_rgba(5,104,253,0.5)]',
         ],
+      },
+      // Icon-only MD size - square 48x48
+      {
+        iconOnly: true,
+        size: 'MD',
+        className: 'w-[48px] h-[48px] min-w-[48px] min-h-[48px]',
+      },
+      // Icon-only SM size - square 32x32
+      {
+        iconOnly: true,
+        size: 'SM',
+        className: 'w-[32px] h-[32px] min-w-[32px] min-h-[32px]',
       },
     ],
     defaultVariants: {

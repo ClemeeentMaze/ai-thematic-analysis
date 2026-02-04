@@ -100,10 +100,10 @@ export function BlockList({
               {/* Add theme button */}
               <ActionButton 
                 emphasis="tertiary" 
-                size="SM" 
+                size="MD" 
                 icon={<Icon name="plus" />}
                 onClick={() => console.log('Add theme clicked')}
-                className="w-full justify-center"
+                fullWidth
               >
                 Add theme
               </ActionButton>
