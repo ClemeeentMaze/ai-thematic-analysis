@@ -34,10 +34,10 @@ export function BlockListItem({ block, isSelected, onSelect, newHighlightCount =
         hover:shadow-[0px_2px_4px_rgba(108,113,140,0.12),inset_0px_0px_0px_0.5px_rgba(108,113,140,0.4)]
       `}
     >
-      {/* New highlight badge */}
+      {/* New highlights badge - purple color */}
       {newHighlightCount > 0 && (
-        <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-[#0568FD] text-white text-[10px] font-semibold rounded-full">
-          {newHighlightCount} new
+        <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-[#7C3AED] text-white text-[10px] font-semibold rounded-full whitespace-nowrap">
+          New highlights
         </div>
       )}
       

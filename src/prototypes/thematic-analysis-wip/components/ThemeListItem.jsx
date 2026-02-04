@@ -50,7 +50,7 @@ export function ThemeListItem({ theme, isSelected, onSelect }) {
               {theme.name}
             </p>
             {theme.newCount > 0 && (
-              <span className="px-1.5 py-0.5 bg-[#0568FD] text-white text-[10px] font-semibold rounded-full">
+              <span className="px-1.5 py-0.5 bg-[#7C3AED] text-white text-[10px] font-semibold rounded-full whitespace-nowrap">
                 {theme.newCount} new
               </span>
             )}

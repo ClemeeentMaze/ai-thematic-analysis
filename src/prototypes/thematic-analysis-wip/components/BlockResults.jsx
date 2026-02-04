@@ -82,7 +82,7 @@ function ResponseTab({ icon: IconComponent, label, count, newCount, isActive, on
         </span>
       )}
       {newCount !== undefined && newCount > 0 && (
-        <span className="ml-1 px-1.5 py-0.5 rounded text-sm font-medium bg-[#0568FD] text-white">
+        <span className="ml-1 px-1.5 py-0.5 rounded text-sm font-medium bg-[#7C3AED] text-white">
           {newCount} new
         </span>
       )}
@@ -120,15 +120,10 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, 
   return (
     <div className={`
       flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50
-      ${isNew ? 'bg-[#F0FAFF]' : ''}
+      ${isNew ? 'bg-[#FAF5FF]' : ''}
     `}>
       <div className="w-[140px] px-4 relative">
         <VideoThumbnail duration={clipDuration} />
-        {isNew && (
-          <div className="absolute -top-1 -left-1 px-1.5 py-0.5 bg-[#0568FD] text-white text-[10px] font-semibold rounded">
-            New
-          </div>
-        )}
       </div>
       <div className="w-[160px] px-4">
         <Text className="text-[#0568FD] font-medium">{participantId}</Text>
@@ -220,7 +215,6 @@ export function BlockResults({ block }) {
               <ResponseTab 
                 icon={Table2} 
                 label="All Responses" 
-                newCount={newResponseCount}
                 isActive={activeTab === 'all'} 
                 onClick={() => setActiveTab('all')} 
               />

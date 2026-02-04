@@ -32,21 +32,17 @@ function ThemeTag({ label, onRemove }) {
 }
 
 /**
- * Add theme button
+ * Add theme button - uses ActionButton Secondary SM
  */
 function AddThemeButton({ onClick }) {
   return (
-    <button 
+    <ActionButton 
+      emphasis="secondary" 
+      size="SM" 
+      icon={<Plus size={14} />} 
+      iconOnly
       onClick={onClick}
-      className="
-        inline-flex items-center justify-center w-7 h-7
-        rounded-full border border-dashed border-[rgba(108,113,140,0.4)]
-        text-[#6C718C] hover:border-[#6C718C] hover:bg-neutral-50
-        transition-all duration-150 cursor-pointer
-      "
-    >
-      <Plus size={14} />
-    </button>
+    />
   );
 }
 
@@ -91,12 +87,12 @@ export function HighlightCard({
   return (
     <div className={`
       relative bg-white rounded-xl p-5
-      border ${isNew ? 'border-[#0568FD] shadow-[0_0_0_2px_rgba(5,104,253,0.1)]' : 'border-[rgba(108,113,140,0.16)]'}
+      border ${isNew ? 'border-[#7C3AED] shadow-[0_0_0_2px_rgba(124,58,237,0.1)]' : 'border-[rgba(108,113,140,0.16)]'}
       transition-all duration-200
     `}>
-      {/* New badge */}
+      {/* New badge - purple color */}
       {isNew && (
-        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-[#0568FD] text-white text-xs font-semibold rounded-full">
+        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-[#7C3AED] text-white text-xs font-semibold rounded-full">
           New
         </div>
       )}
