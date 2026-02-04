@@ -14,7 +14,7 @@
  * │             │                                                        │
  * └─────────────┴────────────────────────────────────────────────────────┘
  */
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Flex, Box } from '@framework/components/ariane';
 import { useStatePlayground } from '@framework/hooks/useStatePlayground';
 
@@ -22,6 +22,7 @@ import { useStatePlayground } from '@framework/hooks/useStatePlayground';
 import { BuilderHeader } from './components/BuilderHeader';
 import { BlockList } from './components/BlockList';
 import { BlockResults } from './components/BlockResults';
+import { ParticipantResults } from './components/ParticipantResults';
 
 // Mock data
 import { BLOCK_TYPES, DEFAULT_USE_CASE, USE_CASES } from './data';
@@ -46,6 +47,10 @@ function ThematicAnalysisV1() {
     selectBlock,
     setUseCase,
   } = useBlocks(DEFAULT_USE_CASE);
+
+  // Tab state for Results/Participants/Themes
+  const [activeTab, setActiveTab] = useState('results');
+  const [selectedParticipantId, setSelectedParticipantId] = useState('p1');
 
   const { useCase, selectedBlockType, blockCount } = state || {};
 
@@ -131,15 +136,25 @@ function ThematicAnalysisV1() {
             blocks={visibleBlocks}
             selectedBlockId={selectedBlockId}
             onSelectBlock={selectBlock}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            selectedParticipantId={selectedParticipantId}
+            onSelectParticipant={setSelectedParticipantId}
           />
         </Box>
         
         {/* 
-          Main Content Area - Block Results
+          Main Content Area - Changes based on active tab
           Flex: 1 (grows to fill remaining space)
         */}
         <Box className="flex-1 h-full bg-white">
-          <BlockResults block={selectedBlock} />
+          {activeTab === 'results' && <BlockResults block={selectedBlock} />}
+          {activeTab === 'participants' && <ParticipantResults />}
+          {activeTab === 'themes' && (
+            <Flex alignItems="center" justifyContent="center" className="h-full text-[#6C718C]">
+              Themes content coming soon
+            </Flex>
+          )}
         </Box>
       </Flex>
     </Flex>
