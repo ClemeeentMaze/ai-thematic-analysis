@@ -1,9 +1,9 @@
 /**
  * BlockList Component (Left Panel)
  * 
- * Scrollable block list with add button.
+ * Scrollable block list.
  */
-import { Flex, ScrollContainer, Icon, ActionButton } from '@framework/components/ariane';
+import { Flex, ScrollContainer } from '@framework/components/ariane';
 import { BlockListItem } from './BlockListItem';
 
 /**
@@ -25,15 +25,6 @@ export function BlockList({ blocks, selectedBlockId, onSelectBlock }) {
               onSelect={onSelectBlock}
             />
           ))}
-          
-          <ActionButton 
-            emphasis="secondary"
-            sentiment="awake"
-            icon={<Icon name="plus" />}
-            className="w-full justify-center"
-          >
-            Add block
-          </ActionButton>
         </Flex>
       </ScrollContainer>
     </Flex>
