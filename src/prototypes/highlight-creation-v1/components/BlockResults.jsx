@@ -297,7 +297,6 @@ function HighlightViewPopover({ highlight, clipDuration, themes, position, onClo
     >
       {/* Insight/Note at top */}
       <div className="mb-4">
-        <Text className="text-sm font-medium text-neutral-500 mb-1">AI Insight</Text>
         <Text className="text-neutral-900">{highlight?.insight || 'No insight available'}</Text>
       </div>
       
