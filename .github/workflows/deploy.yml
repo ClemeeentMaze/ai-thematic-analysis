@@ -41,8 +41,8 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          # GitHub Pages deploys to /repo-name/ subdirectory
-          BASE_PATH: /ai-thematic-analysis/
+          # User site deploys to root (no subdirectory)
+          BASE_PATH: /
 
       - name: Verify build output
         run: |

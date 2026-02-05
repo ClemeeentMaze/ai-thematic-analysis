@@ -9,20 +9,13 @@
       // React Router will then navigate to the correct route
       (function() {
         var l = window.location;
-        var basePath = '/ai-thematic-analysis';
         
         // Don't redirect if already at root
-        if (l.pathname === basePath + '/' || l.pathname === basePath + '/index.html') return;
+        if (l.pathname === '/' || l.pathname === '/index.html') return;
         
-        // Get the path relative to the base path
-        var relativePath = l.pathname;
-        if (relativePath.startsWith(basePath)) {
-          relativePath = relativePath.slice(basePath.length);
-        }
-        
-        // Redirect to base path root with the relative path encoded in query param
+        // Redirect to root with the path encoded in query param
         var redirectUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + 
-          basePath + '/?redirect=' + encodeURIComponent(relativePath + l.search + l.hash);
+          '/?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash);
         l.replace(redirectUrl);
       })();
     </script>

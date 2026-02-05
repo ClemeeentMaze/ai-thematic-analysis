@@ -8,7 +8,6 @@
     <script>
       // Handle GitHub Pages SPA redirect from 404.html
       (function() {
-        var basePath = '/ai-thematic-analysis';
         var redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
         if (redirect && redirect !== location.href) {
@@ -18,11 +17,9 @@
         var params = new URLSearchParams(location.search);
         var redirectPath = params.get('redirect');
         if (redirectPath) {
-          // Construct full path with base path
-          var fullPath = basePath + redirectPath;
-          history.replaceState(null, null, fullPath);
+          history.replaceState(null, null, redirectPath);
           // Remove the query param from URL
-          window.history.replaceState({}, document.title, fullPath);
+          window.history.replaceState({}, document.title, redirectPath);
         }
       })();
     </script>
