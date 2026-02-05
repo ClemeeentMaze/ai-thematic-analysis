@@ -404,26 +404,6 @@ function ResultsView({ themes, onRunNewAnalysis }) {
         Latest analysis: 20 hours ago
       </Text>
 
-      {/* New sessions available card */}
-      <div className="p-4 border border-[rgba(108,113,140,0.16)] rounded-xl mb-4">
-        <Flex alignItems="flex-start" gap="MD">
-          <div className="w-8 h-8 rounded-full bg-[#FFF3E0] flex items-center justify-center flex-shrink-0">
-            <RefreshCw size={16} className="text-[#F57C00]" />
-          </div>
-          <Box className="flex-1">
-            <Text className="font-semibold text-neutral-900 mb-1">
-              New sessions available
-            </Text>
-            <Text color="default.main.secondary" className="mb-3">
-              Since your last analysis, 1 participant has completed a session. Run a new analysis to update your results.
-            </Text>
-            <CTAButton emphasis="primary" size="SM">
-              Analyze 1 new session
-            </CTAButton>
-          </Box>
-        </Flex>
-      </div>
-
       {/* Report generated card */}
       <div className="p-4 border border-[rgba(108,113,140,0.16)] rounded-xl mb-4">
         <Flex alignItems="center" justifyContent="space-between">
