@@ -142,7 +142,7 @@ export function HighlightCard({
                   <span 
                     key={idx}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
-                    style={{ backgroundColor: `${themeColor}15`, color: themeColor }}
+                    style={{ backgroundColor: themeColor ? `${themeColor}20` : '#F3F4F6', color: themeColor || '#6C718C' }}
                   >
                     {theme}
                     <button className="ml-1 hover:opacity-70">

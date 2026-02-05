@@ -6,6 +6,7 @@
  */
 import { Flex, Box, Text, IconFigure } from '@framework/components/ariane';
 import { Tag } from 'lucide-react';
+import { THEME_COLOR_MAP } from './ThemeResults';
 
 /**
  * ThemeListItem displays a clickable theme card in the sidebar
@@ -19,6 +20,9 @@ export function ThemeListItem({ theme, isSelected, onSelect }) {
   const isUncategorized = theme.id === 'uncategorized';
   const isGeneratedTheme = theme.color !== undefined;
   const isThematicAnalysis = theme.id === 'thematic-analysis';
+  
+  // Get centralized colors for this theme
+  const themeColors = THEME_COLOR_MAP[theme.name] || { primary: theme.color || '#6C718C', bg: theme.color ? `${theme.color}15` : '#F5F5F5' };
   
   return (
     <Box
@@ -38,12 +42,12 @@ export function ThemeListItem({ theme, isSelected, onSelect }) {
         <div 
           className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
           style={{ 
-            backgroundColor: isGeneratedTheme ? `${theme.color}15` : '#F5F5F5'
+            backgroundColor: isGeneratedTheme ? themeColors.bg : '#F5F5F5'
           }}
         >
           <Tag 
             size={20} 
-            style={{ color: isGeneratedTheme ? theme.color : '#6C718C' }}
+            style={{ color: isGeneratedTheme ? themeColors.primary : '#6C718C' }}
           />
         </div>
         

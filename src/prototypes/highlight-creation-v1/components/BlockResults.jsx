@@ -103,19 +103,11 @@ const HIGHLIGHT_THEME_MAPPING = {
   'h11': ['Data security and privacy concerns'],
 };
 
-/**
- * Theme color mapping - each theme gets a distinct color
- */
-const THEME_COLORS = {
-  'Navigation and discoverability needs improvement': { bg: '#DBEAFE', hoverBg: '#BFDBFE' }, // Blue
-  'Filter functionality is intuitive but limited': { bg: '#FEF3C7', hoverBg: '#FDE68A' }, // Amber
-  'Learning curve steeper than expected': { bg: '#FCE7F3', hoverBg: '#FBCFE8' }, // Pink
-  'Onboarding and documentation gaps identified': { bg: '#D1FAE5', hoverBg: '#A7F3D0' }, // Green
-  'Power users want keyboard shortcuts': { bg: '#E0E7FF', hoverBg: '#C7D2FE' }, // Indigo
-  'Mobile experience praised for responsiveness': { bg: '#CFFAFE', hoverBg: '#A5F3FC' }, // Cyan
-  'Performance concerns affecting user perception': { bg: '#FEE2E2', hoverBg: '#FECACA' }, // Red
-  'Data security and privacy concerns': { bg: '#F3E8FF', hoverBg: '#E9D5FF' }, // Purple
-};
+// Import centralized theme colors
+import { THEME_COLOR_MAP } from './ThemeResults';
+
+// Alias for backwards compatibility
+const THEME_COLORS = THEME_COLOR_MAP;
 
 // Default colors for highlights without themes
 const DEFAULT_HIGHLIGHT_COLORS = { bg: '#F3F4F6', hoverBg: '#E5E7EB' }; // Gray
@@ -776,15 +768,17 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, 
  * Theme row for the themes table
  */
 function ThemeRow({ theme, frequency, percentage }) {
+  const themeColors = THEME_COLOR_MAP[theme.name] || { primary: '#6C718C', bg: '#F3F4F6' };
+  
   return (
     <div className="flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50 group">
       <div className="flex-1 px-4">
         <Flex alignItems="center" gap="SM">
           <div 
             className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: `${theme.color}15` }}
+            style={{ backgroundColor: themeColors.bg }}
           >
-            <Tag size={14} style={{ color: theme.color }} />
+            <Tag size={14} style={{ color: themeColors.primary }} />
           </div>
           <Text className="text-neutral-900">{theme.name}</Text>
           <span className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 bg-neutral-900 text-white text-xs rounded">

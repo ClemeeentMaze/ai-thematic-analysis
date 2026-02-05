@@ -99,13 +99,28 @@ const MOCK_UNCATEGORIZED_HIGHLIGHTS = [
  * AI-generated themes for the results view
  * Highlight counts should add up to 8 (total highlights from blocks)
  */
+/**
+ * Centralized theme color mapping
+ * Each theme has: primary (for icons/tags), bg (for highlights), hoverBg (for hover states)
+ */
+export const THEME_COLOR_MAP = {
+  'Navigation and discoverability needs improvement': { primary: '#3B82F6', bg: '#DBEAFE', hoverBg: '#BFDBFE' },
+  'Filter functionality is intuitive but limited': { primary: '#F59E0B', bg: '#FEF3C7', hoverBg: '#FDE68A' },
+  'Learning curve steeper than expected': { primary: '#EC4899', bg: '#FCE7F3', hoverBg: '#FBCFE8' },
+  'Onboarding and documentation gaps identified': { primary: '#10B981', bg: '#D1FAE5', hoverBg: '#A7F3D0' },
+  'Power users want keyboard shortcuts': { primary: '#8B5CF6', bg: '#E0E7FF', hoverBg: '#C7D2FE' },
+  'Mobile experience praised for responsiveness': { primary: '#06B6D4', bg: '#CFFAFE', hoverBg: '#A5F3FC' },
+  'Performance concerns affecting user perception': { primary: '#EF4444', bg: '#FEE2E2', hoverBg: '#FECACA' },
+  'Data security and privacy concerns': { primary: '#A855F7', bg: '#F3E8FF', hoverBg: '#E9D5FF' },
+};
+
 const GENERATED_THEMES = [
-  { id: 'theme-1', name: 'Navigation and discoverability needs improvement', color: '#EF4444', highlightCount: 2 },
-  { id: 'theme-2', name: 'Filter functionality is intuitive but limited', color: '#F59E0B', highlightCount: 1 },
-  { id: 'theme-3', name: 'Mobile experience praised for responsiveness', color: '#10B981', highlightCount: 1 },
-  { id: 'theme-4', name: 'Onboarding and documentation gaps identified', color: '#3B82F6', highlightCount: 2 },
-  { id: 'theme-5', name: 'Power users want keyboard shortcuts', color: '#8B5CF6', highlightCount: 1 },
-  { id: 'theme-6', name: 'Learning curve steeper than expected', color: '#EC4899', highlightCount: 1 },
+  { id: 'theme-1', name: 'Navigation and discoverability needs improvement', color: THEME_COLOR_MAP['Navigation and discoverability needs improvement'].primary, highlightCount: 2 },
+  { id: 'theme-2', name: 'Filter functionality is intuitive but limited', color: THEME_COLOR_MAP['Filter functionality is intuitive but limited'].primary, highlightCount: 1 },
+  { id: 'theme-3', name: 'Mobile experience praised for responsiveness', color: THEME_COLOR_MAP['Mobile experience praised for responsiveness'].primary, highlightCount: 1 },
+  { id: 'theme-4', name: 'Onboarding and documentation gaps identified', color: THEME_COLOR_MAP['Onboarding and documentation gaps identified'].primary, highlightCount: 2 },
+  { id: 'theme-5', name: 'Power users want keyboard shortcuts', color: THEME_COLOR_MAP['Power users want keyboard shortcuts'].primary, highlightCount: 1 },
+  { id: 'theme-6', name: 'Learning curve steeper than expected', color: THEME_COLOR_MAP['Learning curve steeper than expected'].primary, highlightCount: 1 },
 ];
 
 /**
@@ -372,13 +387,13 @@ function AnalyzingView() {
  * Theme tag component with color
  */
 function ThemeTag({ name, color }) {
-  // Create a light background from the color
-  const bgColor = `${color}15`;
+  // Use centralized colors
+  const themeColors = THEME_COLOR_MAP[name] || { primary: color, bg: `${color}15` };
   
   return (
     <span 
       className="inline-block px-3 py-1.5 rounded-full text-sm font-medium mb-2 mr-2"
-      style={{ backgroundColor: bgColor, color: color }}
+      style={{ backgroundColor: themeColors.bg, color: themeColors.primary }}
     >
       {name}
     </span>
@@ -557,6 +572,9 @@ function ThemeDetailView({ theme }) {
   const totalSessions = 21; // Mock total
   const themeSessions = 18; // Mock sessions with this theme
   const percentage = Math.round((themeSessions / totalSessions) * 100);
+  
+  // Get centralized colors for this theme
+  const themeColors = THEME_COLOR_MAP[theme.name] || { primary: theme.color, bg: `${theme.color}15` };
 
   return (
     <>
@@ -565,9 +583,9 @@ function ThemeDetailView({ theme }) {
         <Flex alignItems="flex-start" gap="MD">
           <div 
             className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: `${theme.color}15` }}
+            style={{ backgroundColor: themeColors.bg }}
           >
-            <Tag size={24} style={{ color: theme.color }} />
+            <Tag size={24} style={{ color: themeColors.primary }} />
           </div>
           <div>
             <Heading level={1} className="text-2xl font-semibold mb-1">
@@ -598,7 +616,7 @@ function ThemeDetailView({ theme }) {
           <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
             <div 
               className="h-full rounded-full"
-              style={{ width: `${percentage}%`, backgroundColor: theme.color }}
+              style={{ width: `${percentage}%`, backgroundColor: themeColors.primary }}
             />
           </div>
           <Text className="font-medium">{percentage} %</Text>
@@ -647,7 +665,7 @@ function ThemeDetailView({ theme }) {
                     <Flex alignItems="flex-start" gap="SM">
                       <div 
                         className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                        style={{ backgroundColor: theme.color }}
+                        style={{ backgroundColor: themeColors.primary }}
                       />
                       <div>
                         <Text className="font-semibold mb-1">{detail.title}:</Text>
@@ -711,7 +729,7 @@ function ThemeDetailView({ theme }) {
                 isNew={false}
                 participantId={highlight.participantId}
                 showThemeTag={true}
-                themeColor={theme.color}
+                themeColor={themeColors.primary}
               />
             ))}
           </Flex>
