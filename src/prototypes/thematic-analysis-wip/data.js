@@ -77,8 +77,8 @@ export const BLOCK_TYPES = {
   },
   ai_conversation: {
     name: 'AI Conversation',
-    iconName: 'comment-sparkle',
-    arianeColor: 'purple',
+    iconName: 'ai-block',
+    arianeColor: 'lila',
     description: 'AI-led follow-up conversation',
   },
   yesno: {
