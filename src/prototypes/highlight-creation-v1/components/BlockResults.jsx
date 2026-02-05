@@ -532,19 +532,25 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
     );
   };
 
+  // Find the highlight that matches this response's highlighted text
+  const findMatchingHighlight = () => {
+    const highlightText = response.highlightedText;
+    if (!highlightText) return null;
+    
+    const allHighlights = Object.values(MOCK_HIGHLIGHTS_BY_BLOCK_TYPE).flat();
+    // Match by participant AND transcript content
+    return allHighlights.find(h => 
+      h.participantId === response.participantId && 
+      (h.transcript === highlightText || 
+       highlightText.includes(h.transcript) || 
+       h.transcript?.includes(highlightText))
+    );
+  };
+
   // Get highlight colors based on theme assignment
   const getHighlightColors = () => {
-    // Find which highlight this response belongs to by matching highlightedText
-    const highlightText = response.highlightedText;
-    if (!highlightText) return DEFAULT_HIGHLIGHT_COLORS;
-    
-    // Find the highlight ID for this response
-    const allHighlights = Object.values(MOCK_HIGHLIGHTS_BY_BLOCK_TYPE).flat();
-    const matchingHighlight = allHighlights.find(h => 
-      h.participantId === response.participantId && 
-      highlightText.includes(h.transcript?.substring(0, 20) || '') ||
-      h.transcript?.includes(highlightText.substring(0, 20))
-    );
+    const matchingHighlight = findMatchingHighlight();
+    if (!matchingHighlight) return DEFAULT_HIGHLIGHT_COLORS;
     
     // If thematic analysis hasn't been done, use gray
     if (generatedThemes.length === 0) {
@@ -552,10 +558,9 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
     }
     
     // Get themes for this highlight
-    const highlightId = matchingHighlight?.id;
-    const themes = highlightId ? HIGHLIGHT_THEME_MAPPING[highlightId] : [];
+    const themes = HIGHLIGHT_THEME_MAPPING[matchingHighlight.id] || [];
     
-    if (themes && themes.length > 0) {
+    if (themes.length > 0) {
       // Use the first theme's color
       return THEME_COLORS[themes[0]] || DEFAULT_HIGHLIGHT_COLORS;
     }
@@ -565,11 +570,7 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
 
   // Find the highlight data for this response
   const getHighlightData = () => {
-    const highlightText = response.highlightedText;
-    if (!highlightText) return null;
-    
-    const allHighlights = Object.values(MOCK_HIGHLIGHTS_BY_BLOCK_TYPE).flat();
-    return allHighlights.find(h => h.participantId === response.participantId);
+    return findMatchingHighlight();
   };
 
   // Handle click on existing highlight
