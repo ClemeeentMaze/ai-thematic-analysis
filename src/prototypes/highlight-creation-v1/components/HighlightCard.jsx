@@ -11,18 +11,24 @@
  */
 import { Flex, Box, Text, ActionButton, Icon } from '@framework/components/ariane';
 import { Play, Plus, Pencil, LayoutGrid, Share2, AlignLeft } from 'lucide-react';
+import { THEME_COLOR_MAP } from './ThemeResults';
 
 /**
- * Theme tag pill
+ * Theme tag pill - uses centralized theme colors
  */
 function ThemeTag({ label, onRemove }) {
+  const themeColors = THEME_COLOR_MAP[label] || { primary: '#6C718C', bg: '#F3F4F6' };
+  
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-600 text-sm font-medium rounded-full border border-red-200">
+    <span 
+      className="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full"
+      style={{ backgroundColor: themeColors.bg, color: themeColors.primary }}
+    >
       {label}
       {onRemove && (
         <button 
           onClick={onRemove}
-          className="hover:bg-red-100 rounded-full p-0.5 cursor-pointer"
+          className="hover:opacity-70 rounded-full p-0.5 cursor-pointer"
         >
           ×
         </button>
@@ -105,7 +111,7 @@ export function HighlightCard({
         {/* Content */}
         <Box className="flex-1 min-w-0">
           {/* AI Insight */}
-          <Text className="text-[16px] leading-6 font-medium text-neutral-900 mb-4">
+          <Text className="text-[16px] leading-6 text-neutral-900 mb-4">
             {insight}
           </Text>
 
@@ -137,12 +143,13 @@ export function HighlightCard({
           <Flex alignItems="center" justifyContent="space-between">
             {/* Themes */}
             <Flex alignItems="center" gap="SM">
-              {themes.map((theme, idx) => (
-                showThemeTag && themeColor ? (
+              {themes.map((theme, idx) => {
+                const themeColors = THEME_COLOR_MAP[theme] || { primary: themeColor || '#6C718C', bg: themeColor ? `${themeColor}20` : '#F3F4F6' };
+                return showThemeTag ? (
                   <span 
                     key={idx}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
-                    style={{ backgroundColor: themeColor ? `${themeColor}20` : '#F3F4F6', color: themeColor || '#6C718C' }}
+                    style={{ backgroundColor: themeColors.bg, color: themeColors.primary }}
                   >
                     {theme}
                     <button className="ml-1 hover:opacity-70">
@@ -151,8 +158,8 @@ export function HighlightCard({
                   </span>
                 ) : (
                   <ThemeTag key={idx} label={theme} />
-                )
-              ))}
+                );
+              })}
               {!showThemeTag && <AddThemeButton onClick={onAddTheme} />}
             </Flex>
 
