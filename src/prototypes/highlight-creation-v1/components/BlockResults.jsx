@@ -444,7 +444,7 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
   return (
     <div 
       ref={cardRef}
-      className={`relative p-4 rounded-lg border ${hasHighlight ? 'border-[#7C3AED]/30 bg-[#FDFBFF]' : 'border-[rgba(108,113,140,0.28)] bg-white'}`}
+      className={`relative p-4 rounded-lg border ${hasHighlight ? 'border-[#7C3AED]/30 bg-white' : 'border-[rgba(108,113,140,0.28)] bg-white'}`}
     >
       {/* Content: transcript text + metadata + Video thumbnail (on the right) */}
       <Flex gap="MD" alignItems="flex-start">
