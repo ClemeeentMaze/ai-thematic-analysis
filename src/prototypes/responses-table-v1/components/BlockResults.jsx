@@ -1368,11 +1368,16 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
                     </Flex>
                   ) : (
                     // Suggestion text when no themes exist
-                    <Flex alignItems="center" gap="SM" className="mb-4 py-2 px-3 bg-[#F8F8FB] rounded-lg">
-                      <Tag size={16} className="text-[#6C718C]" />
-                      <Text color="default.main.secondary" className="text-sm">
-                        Run thematic analysis to filter highlights by theme
-                      </Text>
+                    <Flex alignItems="center" justifyContent="space-between" gap="SM" className="mb-4 py-2 px-3 bg-[#F8F8FB] rounded-lg">
+                      <Flex alignItems="center" gap="SM">
+                        <Tag size={16} className="text-[#6C718C]" />
+                        <Text color="default.main.secondary" className="text-sm">
+                          Create some themes or run a Thematic Analysis to filter highlights by theme
+                        </Text>
+                      </Flex>
+                      <ActionButton variant="Tertiary" size="SM" onClick={() => setAnalysisStep('method')}>
+                        Start analysis
+                      </ActionButton>
                     </Flex>
                   )}
                 </>
