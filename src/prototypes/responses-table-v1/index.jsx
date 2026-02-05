@@ -95,6 +95,14 @@ function ThematicAnalysisV1() {
 
   // Tab state for Results/Participants/Themes
   const [activeTab, setActiveTab] = useState('results');
+  
+  // Hide toast when switching to themes tab
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    if (newTab === 'themes') {
+      setShowNewHighlightsToast(false);
+    }
+  };
   const [selectedParticipantId, setSelectedParticipantId] = useState('p1');
   const [selectedThemeId, setSelectedThemeId] = useState('thematic-analysis');
   
@@ -259,7 +267,7 @@ function ThematicAnalysisV1() {
             selectedBlockId={selectedBlockId}
             onSelectBlock={handleSelectBlock}
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             selectedParticipantId={selectedParticipantId}
             onSelectParticipant={setSelectedParticipantId}
             selectedThemeId={selectedThemeId}

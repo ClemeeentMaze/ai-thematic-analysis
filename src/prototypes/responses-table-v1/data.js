@@ -212,10 +212,9 @@ export const USE_CASES = {
     blocks: [
       { ...createBlock('prototype_test') },
       { ...createBlock('multiple_choice') },
-      { ...createBlock('context') },
+      { ...createBlock('input'), title: 'What features were you looking for?', description: 'Describe what you hoped to find on this platform.' },
       { ...createBlock('scale') },
       { ...createBlock('ai_conversation') },
-      { ...createBlock('yesno') },
       { ...createBlock('input') },
       { ...createBlock('simple_input') },
     ],

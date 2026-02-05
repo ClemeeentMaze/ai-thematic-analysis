@@ -53,26 +53,12 @@ const MOCK_RESPONSES_BY_TYPE = {
     { id: 4, clipDuration: '0:06', participantId: '483697738', responseValue: '4 / 5', respondedAt: '17 Dec 2025, 03:47 pm' },
     { id: 5, clipDuration: '0:04', participantId: '483697739', responseValue: '5 / 5', respondedAt: '17 Dec 2025, 02:44 pm' },
   ],
-  yesno: [
-    { id: 1, clipDuration: '0:04', participantId: '483697735', responseValue: 'Yes', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
-    { id: 2, clipDuration: '0:03', participantId: '483697736', responseValue: 'No', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
-    { id: 3, clipDuration: '0:05', participantId: '483697737', responseValue: 'Yes', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
-    { id: 4, clipDuration: '0:03', participantId: '483697738', responseValue: 'Yes', respondedAt: '17 Dec 2025, 03:47 pm' },
-    { id: 5, clipDuration: '0:04', participantId: '483697739', responseValue: 'No', respondedAt: '17 Dec 2025, 02:44 pm' },
-  ],
   ai_conversation: [
     { id: 1, clipDuration: '2:15', participantId: '483697735', responseValue: 'I gave a 4 because the core features are great but some things were confusing.\n\n**Interviewer:** What specifically felt confusing to you?\n\nMainly the navigation menu. I couldn\'t find the settings at first and had to click around a lot before finding it hidden in a dropdown.\n\n**Interviewer:** Did this affect how you completed your tasks?\n\nYes, it slowed me down quite a bit. I think if the settings were more visible, it would save a lot of time.', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true, highlightedText: 'find the settings at first and had to click around a lot before finding it hidden in a dropdown' },
     { id: 2, clipDuration: '1:48', participantId: '483697736', responseValue: 'The loading times were frustrating, especially when switching between sections.\n\n**Interviewer:** How long did you typically wait?\n\nProbably 3-4 seconds each time. It doesn\'t sound like much but when you\'re doing it repeatedly, it really adds up.\n\n**Interviewer:** Did this impact your overall impression of the product?\n\nDefinitely. Everything else felt polished but the slowness made it feel unfinished.', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true, highlightedText: 'Everything else felt polished but the slowness made it feel unfinished' },
     { id: 3, clipDuration: '3:02', participantId: '483697737', responseValue: 'I rated it a 3 because I have some concerns.\n\n**Interviewer:** What concerns do you have?\n\nMostly about data security. I wasn\'t sure where my data was being stored or who had access to it.\n\n**Interviewer:** Were you looking for this information somewhere specific?\n\nI checked the footer and the settings but couldn\'t find a clear privacy policy or data handling explanation. That made me hesitant to add any real information.', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true, highlightedText: 'couldn\'t find a clear privacy policy or data handling explanation' },
     { id: 4, clipDuration: '1:35', participantId: '483697738', responseValue: 'I loved the overall experience! It felt very intuitive.\n\n**Interviewer:** What made it feel intuitive for you?\n\nThe visual hierarchy was clear. I always knew what to do next without reading any instructions.\n\n**Interviewer:** Was there anything that could be improved?\n\nMaybe adding keyboard shortcuts for power users. Once I got familiar with it, I wanted to go faster.', respondedAt: '17 Dec 2025, 03:47 pm' },
     { id: 5, clipDuration: '2:22', participantId: '483697739', responseValue: 'I prefer this conversational approach over surveys.\n\n**Interviewer:** Why do you prefer conversations?\n\nI can explain the nuances of my thinking. With multiple choice, I often feel like none of the options quite fit.\n\n**Interviewer:** Can you give an example of something you explained here that you couldn\'t in a survey?\n\nLike how I both love and find issues with the same feature. The filter works great but is hard to discover. A survey would make me choose positive or negative.', respondedAt: '17 Dec 2025, 02:44 pm' },
-  ],
-  context: [
-    { id: 1, clipDuration: '0:18', participantId: '483697735', responseValue: 'Read context', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
-    { id: 2, clipDuration: '0:22', participantId: '483697736', responseValue: 'Read context', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
-    { id: 3, clipDuration: '0:15', participantId: '483697737', responseValue: 'Read context', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
-    { id: 4, clipDuration: '0:20', participantId: '483697738', responseValue: 'Read context', respondedAt: '17 Dec 2025, 03:47 pm' },
-    { id: 5, clipDuration: '0:17', participantId: '483697739', responseValue: 'Read context', respondedAt: '17 Dec 2025, 02:44 pm' },
   ],
 };
 
