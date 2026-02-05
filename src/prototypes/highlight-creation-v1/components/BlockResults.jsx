@@ -234,79 +234,70 @@ function VideoThumbnail({ duration }) {
 
 /**
  * Highlight Creation Popover
- * Shows when user selects text in a response
+ * Matches the design from the screenshot: note input on top, transcript quote with video below
  */
-function HighlightPopover({ selectedText, onCreateHighlight, onClose, position }) {
+function HighlightPopover({ selectedText, clipDuration, onCreateHighlight, onClose, position }) {
   const [note, setNote] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const handleGenerateNote = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setNote(`The participant expresses that "${selectedText.slice(0, 50)}..." indicates a key insight about their experience.`);
-      setIsGenerating(false);
-    }, 1000);
-  };
 
   return (
     <div 
-      className="absolute z-50 bg-white rounded-xl shadow-lg border border-[rgba(108,113,140,0.16)] p-4 w-[360px]"
+      className="absolute z-50 bg-white rounded-xl shadow-lg border border-[rgba(108,113,140,0.16)] p-4 w-[420px]"
       style={{ top: position?.top || 0, left: position?.left || 0 }}
     >
-      <Flex alignItems="center" justifyContent="space-between" className="mb-3">
-        <Flex alignItems="center" gap="XS">
-          <Highlighter size={16} className="text-[#6B5BEE]" />
-          <Text className="font-semibold">Create Highlight</Text>
-        </Flex>
-        <button onClick={onClose} className="text-[#6C718C] hover:text-neutral-900">
-          ×
-        </button>
-      </Flex>
-      
-      <div className="bg-[#F9F7FF] border-l-2 border-[#6B5BEE] p-3 rounded mb-3">
-        <Text className="text-sm italic text-neutral-700">"{selectedText}"</Text>
-      </div>
-      
-      <Text className="text-sm font-medium mb-2">Add a note (optional)</Text>
+      {/* Note input at top with blue border when focused */}
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        placeholder="Describe why this is important..."
-        className="w-full p-3 border border-[rgba(108,113,140,0.28)] rounded-lg text-sm resize-none h-20 mb-3"
+        placeholder="Write a note..."
+        className="w-full p-3 border-2 border-[#0568FD] rounded-lg text-sm resize-none h-16 mb-4 focus:outline-none"
+        autoFocus
       />
       
+      {/* Selected transcript quote with video thumbnail */}
+      <div className="bg-neutral-50 rounded-lg p-4 mb-4">
+        <Flex gap="MD" alignItems="flex-start">
+          <Text className="flex-1 text-neutral-700">{selectedText}</Text>
+          {/* Mini video thumbnail with timestamp */}
+          <div className="flex-shrink-0 relative w-[100px] h-[60px] rounded-lg overflow-hidden bg-neutral-200">
+            <div className="absolute inset-0 bg-gradient-to-br from-neutral-300 to-neutral-400" />
+            <div className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+              {clipDuration || '0:05'}
+            </div>
+          </div>
+        </Flex>
+      </div>
+      
+      {/* Action buttons */}
       <Flex alignItems="center" justifyContent="space-between">
         <ActionButton 
           emphasis="secondary" 
           size="SM" 
-          icon={<Sparkles size={14} />}
-          onClick={handleGenerateNote}
-          disabled={isGenerating}
+          icon={<Tag size={14} />}
         >
-          {isGenerating ? 'Generating...' : 'Generate with AI'}
+          Add themes
         </ActionButton>
-        <Flex gap="SM">
-          <ActionButton emphasis="tertiary" size="SM" onClick={onClose}>
-            Cancel
-          </ActionButton>
-          <ActionButton emphasis="primary" size="SM" onClick={() => onCreateHighlight(selectedText, note)}>
-            Create Highlight
-          </ActionButton>
-        </Flex>
+        <ActionButton 
+          emphasis="primary" 
+          size="SM"
+          onClick={() => onCreateHighlight(selectedText, note)}
+        >
+          Add highlight
+        </ActionButton>
       </Flex>
     </div>
   );
 }
 
 /**
- * Response table row with selectable text (V1 approach)
- * Users can select text to create a highlight inline
+ * Response Card Component
+ * Stacked transcript-style card for displaying responses (replaces table rows)
+ * Consistent with participant view transcript entries
  */
-function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, hasHighlight = false, hideResponse = false, isOpenQuestion = false }) {
+function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestion = false }) {
   const [selectedText, setSelectedText] = useState('');
   const [showPopover, setShowPopover] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState(null);
-  const textRef = useRef(null);
+  const cardRef = useRef(null);
 
   const handleMouseUp = () => {
     if (!isOpenQuestion) return;
@@ -317,26 +308,82 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, 
     if (text && text.length > 5) {
       setSelectedText(text);
       
-      // Get position for popover
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const containerRect = textRef.current?.getBoundingClientRect();
-      
+      // Position popover below the card
+      const cardRect = cardRef.current?.getBoundingClientRect();
       setPopoverPosition({
-        top: rect.bottom - (containerRect?.top || 0) + 10,
-        left: rect.left - (containerRect?.left || 0),
+        top: 'calc(100% + 8px)',
+        left: 0,
       });
       setShowPopover(true);
     }
   };
 
   const handleCreateHighlight = (text, note) => {
-    console.log('Creating highlight:', { text, note });
+    console.log('Creating highlight:', { text, note, responseId: response.id });
     setShowPopover(false);
     setSelectedText('');
     window.getSelection()?.removeAllRanges();
   };
 
+  const closePopover = () => {
+    setShowPopover(false);
+    setSelectedText('');
+    window.getSelection()?.removeAllRanges();
+  };
+
+  return (
+    <div 
+      ref={cardRef}
+      className={`relative p-4 rounded-lg border ${hasHighlight ? 'border-[#7C3AED]/30 bg-[#FDFBFF]' : 'border-[rgba(108,113,140,0.28)] bg-white'} mb-3`}
+    >
+      {/* Header: Participant ID + timestamp + actions */}
+      <Flex alignItems="center" justifyContent="space-between" className="mb-3">
+        <Flex alignItems="center" gap="SM">
+          <Text className="text-[#0568FD] font-medium">{response.participantId}</Text>
+          {hasHighlight && (
+            <Highlighter size={14} className="text-[#7C3AED]" />
+          )}
+          <Text color="default.main.secondary" className="text-sm">{response.respondedAt}</Text>
+        </Flex>
+        <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
+      </Flex>
+      
+      {/* Content: Video thumbnail + transcript text */}
+      <Flex gap="MD" alignItems="flex-start">
+        {/* Video thumbnail */}
+        <div className="flex-shrink-0">
+          <VideoThumbnail duration={response.clipDuration} />
+        </div>
+        
+        {/* Transcript/Response text - selectable for open questions */}
+        <div className="flex-1">
+          <Text 
+            className={`text-neutral-700 leading-relaxed ${isOpenQuestion ? 'cursor-text select-text' : ''}`}
+            onMouseUp={handleMouseUp}
+          >
+            {response.responseValue}
+          </Text>
+        </div>
+      </Flex>
+
+      {/* Highlight creation popover */}
+      {showPopover && (
+        <HighlightPopover
+          selectedText={selectedText}
+          clipDuration={response.clipDuration}
+          onCreateHighlight={handleCreateHighlight}
+          onClose={closePopover}
+          position={popoverPosition}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Response table row (kept for non-open question blocks using table layout)
+ */
+function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, hasHighlight = false, hideResponse = false }) {
   return (
     <div className="flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50 relative">
       <div className="w-[140px] px-4 relative">
@@ -351,30 +398,8 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, 
         </Flex>
       </div>
       {!hideResponse && (
-        <div className="flex-1 px-4 relative" ref={textRef}>
-          <Text 
-            className={`text-neutral-900 ${isOpenQuestion ? 'cursor-text select-text' : ''}`}
-            onMouseUp={handleMouseUp}
-          >
-            {responseValue}
-          </Text>
-          {isOpenQuestion && (
-            <Text color="default.main.secondary" className="text-xs mt-1">
-              Select text to create a highlight
-            </Text>
-          )}
-          {showPopover && (
-            <HighlightPopover
-              selectedText={selectedText}
-              onCreateHighlight={handleCreateHighlight}
-              onClose={() => {
-                setShowPopover(false);
-                setSelectedText('');
-                window.getSelection()?.removeAllRanges();
-              }}
-              position={popoverPosition}
-            />
-          )}
+        <div className="flex-1 px-4">
+          <Text className="text-neutral-900">{responseValue}</Text>
         </div>
       )}
       <div className={`${hideResponse ? 'flex-1' : 'w-[180px]'} px-4`}>
@@ -603,31 +628,49 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
           {/* All Responses Tab Content */}
           {activeTab === 'all' && (
             <>
-              {/* Table Header - grey background */}
-              <div className="flex items-center py-3 bg-[#F8F8FB] rounded-t-lg text-xs font-semibold text-[#6C718C] uppercase tracking-wide">
-                <div className="w-[140px] px-4">CLIPS</div>
-                <div className="w-[160px] px-4">PARTICIPANT</div>
-                {block.type !== 'context' && <div className="flex-1 px-4">RESPONSE</div>}
-                <div className={`${block.type === 'context' ? 'flex-1' : 'w-[180px]'} px-4`}>RESPONDED AT</div>
-                <div className="w-[80px] px-4 text-center">ACTIONS</div>
-              </div>
+              {/* Use stacked cards for Open Question / AI Conversation blocks */}
+              {(block.type === 'input' || block.type === 'ai_conversation') ? (
+                <div className="space-y-0">
+                  {blockResponses.map((response) => {
+                    const participantsWithHighlights = getParticipantsWithHighlights(block.type);
+                    return (
+                      <ResponseCard
+                        key={response.id}
+                        response={response}
+                        blockType={block.type}
+                        hasHighlight={participantsWithHighlights.has(response.participantId)}
+                        isOpenQuestion={true}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <>
+                  {/* Table layout for other block types */}
+                  <div className="flex items-center py-3 bg-[#F8F8FB] rounded-t-lg text-xs font-semibold text-[#6C718C] uppercase tracking-wide">
+                    <div className="w-[140px] px-4">CLIPS</div>
+                    <div className="w-[160px] px-4">PARTICIPANT</div>
+                    {block.type !== 'context' && <div className="flex-1 px-4">RESPONSE</div>}
+                    <div className={`${block.type === 'context' ? 'flex-1' : 'w-[180px]'} px-4`}>RESPONDED AT</div>
+                    <div className="w-[80px] px-4 text-center">ACTIONS</div>
+                  </div>
 
-              {/* Table Rows */}
-              {blockResponses.map((response) => {
-                const participantsWithHighlights = getParticipantsWithHighlights(block.type);
-                return (
-                  <ResponseRow 
-                    key={response.id}
-                    clipDuration={response.clipDuration}
-                    participantId={response.participantId}
-                    responseValue={response.responseValue}
-                    respondedAt={response.respondedAt}
-                    hasHighlight={participantsWithHighlights.has(response.participantId)}
-                    hideResponse={block.type === 'context'}
-                    isOpenQuestion={block.type === 'input' || block.type === 'ai_conversation'}
-                  />
-                );
-              })}
+                  {blockResponses.map((response) => {
+                    const participantsWithHighlights = getParticipantsWithHighlights(block.type);
+                    return (
+                      <ResponseRow 
+                        key={response.id}
+                        clipDuration={response.clipDuration}
+                        participantId={response.participantId}
+                        responseValue={response.responseValue}
+                        respondedAt={response.respondedAt}
+                        hasHighlight={participantsWithHighlights.has(response.participantId)}
+                        hideResponse={block.type === 'context'}
+                      />
+                    );
+                  })}
+                </>
+              )}
 
               {/* Pagination - using ActionButton/Tertiary */}
               <Flex alignItems="center" justifyContent="center" gap="MD" className="py-4">
