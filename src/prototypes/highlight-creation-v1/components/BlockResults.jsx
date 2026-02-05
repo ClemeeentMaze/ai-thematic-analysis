@@ -104,6 +104,23 @@ const HIGHLIGHT_THEME_MAPPING = {
 };
 
 /**
+ * Theme color mapping - each theme gets a distinct color
+ */
+const THEME_COLORS = {
+  'Navigation and discoverability needs improvement': { bg: '#DBEAFE', hoverBg: '#BFDBFE' }, // Blue
+  'Filter functionality is intuitive but limited': { bg: '#FEF3C7', hoverBg: '#FDE68A' }, // Amber
+  'Learning curve steeper than expected': { bg: '#FCE7F3', hoverBg: '#FBCFE8' }, // Pink
+  'Onboarding and documentation gaps identified': { bg: '#D1FAE5', hoverBg: '#A7F3D0' }, // Green
+  'Power users want keyboard shortcuts': { bg: '#E0E7FF', hoverBg: '#C7D2FE' }, // Indigo
+  'Mobile experience praised for responsiveness': { bg: '#CFFAFE', hoverBg: '#A5F3FC' }, // Cyan
+  'Performance concerns affecting user perception': { bg: '#FEE2E2', hoverBg: '#FECACA' }, // Red
+  'Data security and privacy concerns': { bg: '#F3E8FF', hoverBg: '#E9D5FF' }, // Purple
+};
+
+// Default colors for highlights without themes
+const DEFAULT_HIGHLIGHT_COLORS = { bg: '#F3F4F6', hoverBg: '#E5E7EB' }; // Gray
+
+/**
  * Mock highlights data - AI-generated from responses
  * Organized by block type
  */
@@ -339,7 +356,7 @@ function HighlightPopover({ selectedText, clipDuration, onCreateHighlight, onClo
  * Stacked transcript-style card for displaying responses (replaces table rows)
  * Consistent with participant view transcript entries
  */
-function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestion = false, onNavigateToParticipant }) {
+function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestion = false, onNavigateToParticipant, generatedThemes = [] }) {
   const [selectedText, setSelectedText] = useState('');
   const [showPopover, setShowPopover] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState(null);
@@ -451,12 +468,59 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
     );
   };
 
+  // Get highlight colors based on theme assignment
+  const getHighlightColors = () => {
+    // Find which highlight this response belongs to by matching highlightedText
+    const highlightText = response.highlightedText;
+    if (!highlightText) return DEFAULT_HIGHLIGHT_COLORS;
+    
+    // Find the highlight ID for this response
+    const allHighlights = Object.values(MOCK_HIGHLIGHTS_BY_BLOCK_TYPE).flat();
+    const matchingHighlight = allHighlights.find(h => 
+      h.participantId === response.participantId && 
+      highlightText.includes(h.transcript?.substring(0, 20) || '') ||
+      h.transcript?.includes(highlightText.substring(0, 20))
+    );
+    
+    // If thematic analysis hasn't been done, use gray
+    if (generatedThemes.length === 0) {
+      return DEFAULT_HIGHLIGHT_COLORS;
+    }
+    
+    // Get themes for this highlight
+    const highlightId = matchingHighlight?.id;
+    const themes = highlightId ? HIGHLIGHT_THEME_MAPPING[highlightId] : [];
+    
+    if (themes && themes.length > 0) {
+      // Use the first theme's color
+      return THEME_COLORS[themes[0]] || DEFAULT_HIGHLIGHT_COLORS;
+    }
+    
+    return DEFAULT_HIGHLIGHT_COLORS;
+  };
+
+  // Render existing highlight with appropriate color
+  const renderExistingHighlight = (text, colors) => {
+    return (
+      <span 
+        className="px-1 rounded cursor-pointer transition-colors duration-100"
+        style={{ backgroundColor: colors.bg }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.hoverBg}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.bg}
+      >
+        {text}
+      </span>
+    );
+  };
+
   // Render text with highlighted portion and conversation formatting
   const renderResponseText = () => {
     const text = response.responseValue;
     const highlightText = response.highlightedText;
     // Currently selected text for new highlight creation
     const activeSelection = selectedText && showPopover ? selectedText : null;
+    // Get colors for existing highlights
+    const highlightColors = getHighlightColors();
     
     // Split by double newlines to get paragraphs (conversation turns)
     const paragraphs = text.split('\n\n');
@@ -487,11 +551,11 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
             : renderWordsWithHover(part)
         );
       } else if (highlightText) {
-        // Existing highlight from saved data
+        // Existing highlight from saved data - use theme color or gray
         const parts = paragraph.split(new RegExp(`(${highlightText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
         content = parts.map((part, i) => 
           part.toLowerCase() === highlightText.toLowerCase() 
-            ? <span key={i} className="bg-[#0568FD] text-white px-1 rounded">{part}</span>
+            ? <span key={i}>{renderExistingHighlight(part, highlightColors)}</span>
             : renderWordsWithHover(part)
         );
       } else {
@@ -838,6 +902,7 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
                         hasHighlight={participantsWithHighlights.has(response.participantId)}
                         isOpenQuestion={true}
                         onNavigateToParticipant={() => onNavigateToParticipant?.(response.participantId)}
+                        generatedThemes={generatedThemes}
                       />
                     );
                   })}
