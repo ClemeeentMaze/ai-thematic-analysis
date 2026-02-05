@@ -109,7 +109,9 @@ function ThematicAnalysisV1() {
     'thematic-analysis': { id: 'thematic-analysis', name: 'Thematic analysis', status: 'Not enough sessions' },
     'uncategorized': { id: 'uncategorized', name: 'Uncategorized', highlightCount: 8, newCount: uncategorizedViewed ? 0 : 5 },
   };
-  const selectedTheme = MOCK_THEMES[selectedThemeId];
+  
+  // Find selected theme - could be from mock themes or generated themes
+  const selectedTheme = MOCK_THEMES[selectedThemeId] || generatedThemes.find(t => t.id === selectedThemeId);
 
   const { useCase, selectedBlockType, blockCount } = state || {};
 

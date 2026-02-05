@@ -73,6 +73,8 @@ function HighlightThumbnail({ duration = '0:15' }) {
  * @param {Array} props.themes - Array of theme labels
  * @param {boolean} props.isNew - Whether this is a new highlight
  * @param {string} props.participantId - Associated participant ID
+ * @param {boolean} props.showThemeTag - Whether to show styled theme tag with color
+ * @param {string} props.themeColor - Color for the theme tag background
  */
 export function HighlightCard({ 
   insight,
@@ -83,6 +85,8 @@ export function HighlightCard({
   onAddTheme,
   onEdit,
   onShare,
+  showThemeTag = false,
+  themeColor,
 }) {
   return (
     <div className={`
@@ -139,9 +143,22 @@ export function HighlightCard({
             {/* Themes */}
             <Flex alignItems="center" gap="SM">
               {themes.map((theme, idx) => (
-                <ThemeTag key={idx} label={theme} />
+                showThemeTag && themeColor ? (
+                  <span 
+                    key={idx}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
+                    style={{ backgroundColor: `${themeColor}15`, color: themeColor }}
+                  >
+                    {theme}
+                    <button className="ml-1 hover:opacity-70">
+                      <Plus size={14} />
+                    </button>
+                  </span>
+                ) : (
+                  <ThemeTag key={idx} label={theme} />
+                )
               ))}
-              <AddThemeButton onClick={onAddTheme} />
+              {!showThemeTag && <AddThemeButton onClick={onAddTheme} />}
             </Flex>
 
             {/* Actions */}

@@ -9,7 +9,7 @@
  */
 import { useState, useEffect } from 'react';
 import { Flex, Box, Text, Heading, ScrollContainer, CTAButton, ActionButton } from '@framework/components/ariane';
-import { Play, Check, Star, Highlighter, LayoutGrid, FileText, Sparkles, Tag, RefreshCw } from 'lucide-react';
+import { Play, Check, Star, Highlighter, LayoutGrid, FileText, Sparkles, Tag, RefreshCw, EyeOff, Share2, Download, Copy, Pencil, MoreHorizontal } from 'lucide-react';
 import { HighlightCard } from './HighlightCard';
 
 /**
@@ -442,6 +442,286 @@ function ResultsView({ themes, onRunNewAnalysis }) {
 }
 
 /**
+ * Mock highlights data for each generated theme
+ */
+const THEME_HIGHLIGHTS = {
+  'theme-1': [
+    {
+      id: 'th1-1',
+      insight: "The participant identifies navigation issues, noting that some features were hard to discover without guidance.",
+      transcript: "I really liked how the navigation was laid out. Everything felt like it was where I expected it to be...",
+      themes: ['Navigation and discoverability needs improvement'],
+      isNew: false,
+      participantId: '483697738',
+    },
+    {
+      id: 'th1-2',
+      insight: "User struggled to find key features, suggesting better visual cues or onboarding would help.",
+      transcript: "I was looking for the settings but couldn't find it easily. Maybe a more prominent icon would help...",
+      themes: ['Navigation and discoverability needs improvement'],
+      isNew: false,
+      participantId: '483697739',
+    },
+  ],
+  'theme-2': [
+    {
+      id: 'th2-1',
+      insight: "User found the filtering feature intuitive but wished for more advanced options like date range filtering.",
+      transcript: "I really like how the filters work, they're pretty intuitive. But I was looking for a way to filter by date range and couldn't find it...",
+      themes: ['Filter functionality is intuitive but limited'],
+      isNew: false,
+      participantId: '483697736',
+    },
+  ],
+  'theme-3': [
+    {
+      id: 'th3-1',
+      insight: "Mobile responsiveness was praised, with the layout adapting well to smaller screens.",
+      transcript: "Even on my phone, the experience was smooth. The buttons were easy to tap and nothing felt cramped...",
+      themes: ['Mobile experience praised for responsiveness'],
+      isNew: false,
+      participantId: '483697739',
+    },
+  ],
+  'theme-4': [
+    {
+      id: 'th4-1',
+      insight: "Users consistently mention wanting better onboarding documentation and tooltips for complex features.",
+      transcript: "I think the main improvement would be having more tooltips or a guided tour when you first start. Some features are hidden and not obvious...",
+      themes: ['Onboarding and documentation gaps identified'],
+      isNew: false,
+      participantId: '483697738',
+    },
+    {
+      id: 'th4-2',
+      insight: "The learning curve was mentioned as a barrier for new users without proper documentation.",
+      transcript: "It took me a while to figure out how everything works. Some documentation would have been helpful...",
+      themes: ['Onboarding and documentation gaps identified'],
+      isNew: false,
+      participantId: '483697735',
+    },
+  ],
+  'theme-5': [
+    {
+      id: 'th5-1',
+      insight: "Multiple participants expressed desire for keyboard shortcuts to speed up their workflow.",
+      transcript: "If there were keyboard shortcuts for the common actions, that would save me a lot of time. Right now I have to click through menus...",
+      themes: ['Power users want keyboard shortcuts'],
+      isNew: false,
+      participantId: '483697739',
+    },
+  ],
+  'theme-6': [
+    {
+      id: 'th6-1',
+      insight: "Participant gave a high rating but mentioned the learning curve was steeper than expected initially.",
+      transcript: "I'd give it an 8 out of 10. It's really powerful once you get the hang of it, but it took me a bit to understand all the features...",
+      themes: ['Learning curve steeper than expected'],
+      isNew: false,
+      participantId: '483697737',
+    },
+  ],
+};
+
+/**
+ * Mock analysis data for themes
+ */
+const THEME_ANALYSIS = {
+  'theme-1': {
+    summary: "While the overall navigation structure was appreciated, users consistently reported difficulty discovering certain features. The main pain points center around hidden functionality and lack of visual cues for important actions.",
+    details: [
+      {
+        title: "Hidden features frustrate users",
+        description: "Users need confidence that new initiatives will resonate before investing heavily in navigation changes.",
+        quote: "I was looking for the settings but couldn't find it easily. Maybe a more prominent icon would help.",
+        quotee: "David E., Director of Research and Insights • Purpose Brand...",
+      },
+      {
+        title: "Visual hierarchy needs improvement",
+        description: "Key actions should be more prominently displayed to reduce cognitive load.",
+        quote: "Everything felt like it was where I expected it to be, but some things were harder to find than others.",
+        quotee: "Madelaine E., Head of Marketing • Lego (02:02)",
+      },
+    ],
+  },
+};
+
+/**
+ * ThemeDetailView - Shows when a generated theme is selected
+ * Displays highlights assigned to this theme with summary and analysis
+ */
+function ThemeDetailView({ theme }) {
+  const [hasSummary, setHasSummary] = useState(false);
+  const highlights = THEME_HIGHLIGHTS[theme.id] || [];
+  const analysis = THEME_ANALYSIS[theme.id];
+  const totalSessions = 21; // Mock total
+  const themeSessions = 18; // Mock sessions with this theme
+  const percentage = Math.round((themeSessions / totalSessions) * 100);
+
+  return (
+    <>
+      {/* Header */}
+      <Flex alignItems="flex-start" justifyContent="space-between" className="mb-6">
+        <Flex alignItems="flex-start" gap="MD">
+          <div 
+            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: `${theme.color}15` }}
+          >
+            <Tag size={24} style={{ color: theme.color }} />
+          </div>
+          <div>
+            <Heading level={1} className="text-2xl font-semibold mb-1">
+              {theme.name}
+            </Heading>
+            <Text color="default.main.secondary">
+              Events and conditions that prompt organizations to conduct brand testing
+            </Text>
+          </div>
+        </Flex>
+        <Flex alignItems="center" gap="SM">
+          <ActionButton emphasis="secondary" size="SM" icon={<EyeOff size={16} />}>
+            Hide in report
+          </ActionButton>
+          <ActionButton emphasis="primary" size="SM" icon={<Share2 size={16} />}>
+            Share theme
+          </ActionButton>
+          <ActionButton emphasis="tertiary" size="SM" icon={<Download size={16} />} iconOnly />
+        </Flex>
+      </Flex>
+
+      {/* Progress bar */}
+      <div className="p-4 border border-[rgba(108,113,140,0.16)] rounded-xl mb-6">
+        <Text color="default.main.secondary" className="text-sm mb-2">
+          Theme highlighted in {themeSessions} of {totalSessions} sessions
+        </Text>
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full"
+              style={{ width: `${percentage}%`, backgroundColor: theme.color }}
+            />
+          </div>
+          <Text className="font-medium">{percentage} %</Text>
+        </div>
+      </div>
+
+      {/* Two column layout */}
+      <Flex gap="XL" className="flex-1">
+        {/* Left column - Analysis */}
+        <div className="w-[400px] flex-shrink-0">
+          <div className="p-6 border border-[rgba(108,113,140,0.16)] rounded-xl">
+            <Flex alignItems="center" justifyContent="space-between" className="mb-4">
+              <Text className="font-semibold text-lg">Analysis</Text>
+              <Flex alignItems="center" gap="XS">
+                <ActionButton emphasis="tertiary" size="SM" icon={<Copy size={16} />} iconOnly />
+                <ActionButton emphasis="tertiary" size="SM" icon={<Pencil size={16} />}>
+                  Edit
+                </ActionButton>
+              </Flex>
+            </Flex>
+
+            {hasSummary || analysis ? (
+              <>
+                <Text className="text-xs font-semibold text-[#6C718C] uppercase tracking-wide mb-2">
+                  SUMMARY
+                </Text>
+                <Text className="mb-6 leading-relaxed">
+                  {analysis?.summary || "While many organizations aspire to regular, scheduled brand testing cadences (quarterly or biannual), the reality is that most studies remain "}
+                  <strong>reactive responses to specific business events</strong>
+                  {" (new campaigns, product launches, and rebranding initiatives are primary triggers). This gap between aspiration and reality represents a key opportunity for an always-on AI solution."}
+                </Text>
+
+                <Text className="text-xs font-semibold text-[#6C718C] uppercase tracking-wide mb-4">
+                  DETAILS
+                </Text>
+                
+                {(analysis?.details || [
+                  {
+                    title: "New campaigns & product launches",
+                    description: "Orgs need confidence that new initiatives will resonate before investing heavily in launch and media spend.",
+                    quote: "I recently launched a new campaign and we did testing from animatic testing on the video asset to testing the campaign and focus groups even as far as prior to that working on like taglines and things via surveys. So we ran the full gamut of testing prior to launching.",
+                    quotee: "Brand Manager - Heaven Hill",
+                  },
+                ]).map((detail, index) => (
+                  <div key={index} className="mb-4">
+                    <Flex alignItems="flex-start" gap="SM">
+                      <div 
+                        className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                        style={{ backgroundColor: theme.color }}
+                      />
+                      <div>
+                        <Text className="font-semibold mb-1">{detail.title}:</Text>
+                        <Text color="default.main.secondary" className="mb-2">
+                          {detail.description}
+                        </Text>
+                        <div className="pl-4 border-l-2 border-neutral-200">
+                          <Text className="italic text-neutral-600 text-sm">
+                            "{detail.quote}"
+                          </Text>
+                          <Text color="default.main.secondary" className="text-sm mt-1">
+                            {detail.quotee}
+                          </Text>
+                        </div>
+                      </div>
+                    </Flex>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <Flex flexDirection="column" alignItems="center" justifyContent="center" className="py-8 text-center">
+                <div className="w-12 h-12 rounded-full bg-[#F9F7FF] flex items-center justify-center mb-4">
+                  <Sparkles size={24} className="text-[#6B5BEE]" />
+                </div>
+                <Text className="font-medium mb-2">Generate a summary</Text>
+                <Text color="default.main.secondary" className="text-sm mb-4 max-w-[280px]">
+                  Create an AI-powered summary and key takeaways from the highlights in this theme.
+                </Text>
+                <ActionButton 
+                  emphasis="secondary" 
+                  size="SM" 
+                  icon={<Sparkles size={16} />}
+                  onClick={() => setHasSummary(true)}
+                >
+                  Generate summary
+                </ActionButton>
+              </Flex>
+            )}
+          </div>
+        </div>
+
+        {/* Right column - Highlights Reel */}
+        <div className="flex-1">
+          <Flex alignItems="center" gap="SM" className="mb-4">
+            <LayoutGrid size={20} className="text-[#6C718C]" />
+            <Text className="font-semibold uppercase text-sm tracking-wide text-[#6C718C]">
+              HIGHLIGHTS REEL
+            </Text>
+            <span className="px-2 py-0.5 bg-neutral-100 text-[#6C718C] text-sm font-medium rounded">
+              {highlights.length}
+            </span>
+          </Flex>
+
+          <Flex flexDirection="column" gap="MD">
+            {highlights.map((highlight) => (
+              <HighlightCard
+                key={highlight.id}
+                insight={highlight.insight}
+                transcript={highlight.transcript}
+                themes={highlight.themes}
+                isNew={false}
+                participantId={highlight.participantId}
+                showThemeTag={true}
+                themeColor={theme.color}
+              />
+            ))}
+          </Flex>
+        </div>
+      </Flex>
+    </>
+  );
+}
+
+/**
  * ThemeResults - Main component for theme detail view
  * @param {Object} props.theme - The theme to display
  * @param {boolean} props.isViewed - Whether the theme has been viewed (hides new indicators)
@@ -449,6 +729,8 @@ function ResultsView({ themes, onRunNewAnalysis }) {
  */
 export function ThemeResults({ theme, isViewed = false, onAnalysisComplete }) {
   const isThematicAnalysis = theme?.id === 'thematic-analysis';
+  const isUncategorized = theme?.id === 'uncategorized';
+  const isGeneratedTheme = theme?.color !== undefined;
   
   // Analysis flow state: 'initial' | 'selecting' | 'analyzing' | 'complete'
   const [analysisStep, setAnalysisStep] = useState('initial');
@@ -472,6 +754,17 @@ export function ThemeResults({ theme, isViewed = false, onAnalysisComplete }) {
       <Flex alignItems="center" justifyContent="center" className="h-full">
         <Text color="default.main.secondary">Select a theme to view details</Text>
       </Flex>
+    );
+  }
+
+  // If this is a generated theme, show the detail view
+  if (isGeneratedTheme) {
+    return (
+      <ScrollContainer className="h-full">
+        <Flex flexDirection="column" className="p-6 h-full min-h-[600px]">
+          <ThemeDetailView theme={theme} />
+        </Flex>
+      </ScrollContainer>
     );
   }
 
@@ -506,7 +799,7 @@ export function ThemeResults({ theme, isViewed = false, onAnalysisComplete }) {
               />
             )}
           </>
-        ) : (
+        ) : isUncategorized ? (
           /* Uncategorized view - shows highlights that need themes */
           <Box>
             <Flex alignItems="center" gap="SM" className="mb-6">
@@ -537,7 +830,7 @@ export function ThemeResults({ theme, isViewed = false, onAnalysisComplete }) {
               ))}
             </Flex>
           </Box>
-        )}
+        ) : null}
       </Flex>
     </ScrollContainer>
   );
