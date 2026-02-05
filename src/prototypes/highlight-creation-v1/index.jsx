@@ -239,7 +239,7 @@ function ThematicAnalysisV1() {
               }}
             />
           )}
-          {activeTab === 'participants' && <ParticipantResults blocks={visibleBlocks} selectedParticipantId={selectedParticipantId} />}
+          {activeTab === 'participants' && <ParticipantResults blocks={visibleBlocks} selectedParticipantId={selectedParticipantId} generatedThemes={generatedThemes} />}
           {activeTab === 'themes' && <ThemeResults theme={selectedTheme} isViewed={selectedThemeId === 'uncategorized' ? uncategorizedViewed : false} onAnalysisComplete={handleAnalysisComplete} />}
         </Box>
       </Flex>

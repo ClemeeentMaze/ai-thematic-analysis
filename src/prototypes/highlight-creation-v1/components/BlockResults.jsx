@@ -86,6 +86,21 @@ const MOCK_RESPONSES_DEFAULT = [
 ];
 
 /**
+ * Mapping of highlight IDs to their assigned themes (after thematic analysis)
+ * This simulates the result of AI categorization
+ */
+const HIGHLIGHT_THEME_MAPPING = {
+  'h1': ['Navigation and discoverability needs improvement'],
+  'h2': ['Filter functionality is intuitive but limited'],
+  'h3': ['Learning curve steeper than expected'],
+  'h4': ['Onboarding and documentation gaps identified'],
+  'h5': ['Power users want keyboard shortcuts'],
+  'h6': ['Navigation and discoverability needs improvement'],
+  'h7': ['Mobile experience praised for responsiveness'],
+  'h8': ['Onboarding and documentation gaps identified'],
+};
+
+/**
  * Mock highlights data - AI-generated from responses
  * Organized by block type
  */
@@ -737,16 +752,23 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
           {activeTab === 'highlights' && (
             <Flex flexDirection="column" gap="MD">
               {blockHighlights.length > 0 ? (
-                blockHighlights.map((highlight) => (
-                  <HighlightCard
-                    key={highlight.id}
-                    insight={highlight.insight}
-                    transcript={highlight.transcript}
-                    themes={highlight.themes}
-                    isNew={isViewed ? false : highlight.isNew}
-                    participantId={highlight.participantId}
-                  />
-                ))
+                blockHighlights.map((highlight) => {
+                  // Apply themes from mapping if thematic analysis has been done
+                  const appliedThemes = generatedThemes.length > 0 
+                    ? (HIGHLIGHT_THEME_MAPPING[highlight.id] || [])
+                    : highlight.themes;
+                  
+                  return (
+                    <HighlightCard
+                      key={highlight.id}
+                      insight={highlight.insight}
+                      transcript={highlight.transcript}
+                      themes={appliedThemes}
+                      isNew={isViewed ? false : highlight.isNew}
+                      participantId={highlight.participantId}
+                    />
+                  );
+                })
               ) : (
                 <Flex 
                   alignItems="center" 

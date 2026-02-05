@@ -11,6 +11,15 @@ import { BLOCK_TYPES } from '../data';
 import { HighlightCard } from './HighlightCard';
 
 /**
+ * Mapping of participant highlight IDs to their assigned themes (after thematic analysis)
+ */
+const PARTICIPANT_HIGHLIGHT_THEME_MAPPING = {
+  'ph1': ['Navigation and discoverability needs improvement'],
+  'ph2': ['Filter functionality is intuitive but limited'],
+  'ph3': ['Learning curve steeper than expected'],
+};
+
+/**
  * Mock highlights for participants - cross-referenced from blocks
  */
 const MOCK_PARTICIPANT_HIGHLIGHTS = {
@@ -279,7 +288,7 @@ const MOCK_TRANSCRIPTS_PER_BLOCK = [
 /**
  * ParticipantResults - Main component
  */
-export function ParticipantResults({ blocks = [], selectedParticipantId = 'p1' }) {
+export function ParticipantResults({ blocks = [], selectedParticipantId = 'p1', generatedThemes = [] }) {
   const [activeTab, setActiveTab] = useState('all');
   
   // Mock participant data
@@ -405,15 +414,22 @@ export function ParticipantResults({ blocks = [], selectedParticipantId = 'p1' }
               {activeTab === 'highlights' && (
                 <Flex flexDirection="column" gap="MD">
                   {participantHighlights.length > 0 ? (
-                    participantHighlights.map((highlight) => (
-                      <HighlightCard
-                        key={highlight.id}
-                        insight={highlight.insight}
-                        transcript={highlight.transcript}
-                        themes={highlight.themes}
-                        isNew={highlight.isNew}
-                      />
-                    ))
+                    participantHighlights.map((highlight) => {
+                      // Apply themes from mapping if thematic analysis has been done
+                      const appliedThemes = generatedThemes.length > 0 
+                        ? (PARTICIPANT_HIGHLIGHT_THEME_MAPPING[highlight.id] || [])
+                        : highlight.themes;
+                      
+                      return (
+                        <HighlightCard
+                          key={highlight.id}
+                          insight={highlight.insight}
+                          transcript={highlight.transcript}
+                          themes={appliedThemes}
+                          isNew={highlight.isNew}
+                        />
+                      );
+                    })
                   ) : (
                     <Flex 
                       alignItems="center" 
