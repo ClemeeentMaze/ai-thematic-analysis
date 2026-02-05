@@ -36,7 +36,7 @@ import { useBlocks } from './hooks/useBlocks';
  */
 function NewHighlightsToast({ onNavigateToThemes, onDismiss }) {
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-slide-up">
+    <div className="fixed top-20 right-6 z-[9999] animate-slide-down">
       <div className="flex items-center gap-3 bg-white rounded-xl shadow-lg border border-[rgba(108,113,140,0.16)] px-4 py-3">
         <div className="w-10 h-10 rounded-lg bg-[#F0FAFF] flex items-center justify-center flex-shrink-0">
           <Tag size={20} className="text-[#0568FD]" />
