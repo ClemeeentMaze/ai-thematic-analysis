@@ -376,7 +376,7 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
       ref={cardRef}
       className={`relative p-4 rounded-lg border ${hasHighlight ? 'border-[#7C3AED]/30 bg-[#FDFBFF]' : 'border-[rgba(108,113,140,0.28)] bg-white'}`}
     >
-      {/* Content: Video thumbnail (if available) + transcript text */}
+      {/* Content: Video thumbnail (if available) + transcript text + metadata */}
       <Flex gap="MD" alignItems="flex-start">
         {/* Video thumbnail - only show if response has video */}
         {hasVideo && (
@@ -385,7 +385,7 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
           </div>
         )}
         
-        {/* Transcript/Response text - selectable for open questions, with highlighted portions */}
+        {/* Transcript/Response text + metadata - aligned together */}
         <div className="flex-1">
           <Text 
             className={`text-neutral-700 leading-relaxed ${isOpenQuestion ? 'cursor-text select-text' : ''}`}
@@ -393,24 +393,24 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
           >
             {renderResponseText()}
           </Text>
+          
+          {/* Metadata: Participant link + timestamp + highlight icon + actions */}
+          <Flex alignItems="center" justifyContent="space-between" className="mt-3">
+            <Flex alignItems="center" gap="SM">
+              <button 
+                className="text-[#6C718C] font-medium underline hover:text-[#535a74] cursor-pointer"
+                onClick={onNavigateToParticipant}
+              >
+                Participant {response.participantId}
+              </button>
+              {hasHighlight && (
+                <Highlighter size={14} className="text-[#7C3AED]" />
+              )}
+              <Text color="default.main.secondary" className="text-sm">{response.respondedAt}</Text>
+            </Flex>
+            <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
+          </Flex>
         </div>
-      </Flex>
-      
-      {/* Footer: Participant link + timestamp + highlight icon + actions */}
-      <Flex alignItems="center" justifyContent="space-between" className="mt-3">
-        <Flex alignItems="center" gap="SM">
-          <button 
-            className="text-[#0568FD] font-medium underline hover:text-[#0450c9] cursor-pointer"
-            onClick={onNavigateToParticipant}
-          >
-            Participant {response.participantId}
-          </button>
-          {hasHighlight && (
-            <Highlighter size={14} className="text-[#7C3AED]" />
-          )}
-          <Text color="default.main.secondary" className="text-sm">{response.respondedAt}</Text>
-        </Flex>
-        <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
       </Flex>
 
       {/* Highlight creation popover */}
