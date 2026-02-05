@@ -272,6 +272,21 @@ function ResponseDetailPanel({ response, blockType, onCreateHighlight }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showHighlightForm, setShowHighlightForm] = useState(false);
   const transcriptRef = useRef(null);
+
+  // Early return if no response selected
+  if (!response) {
+    return (
+      <Flex alignItems="center" justifyContent="center" className="h-full bg-neutral-50 rounded-lg">
+        <div className="text-center">
+          <Highlighter size={32} className="text-[#6C718C] mx-auto mb-2" />
+          <Text color="default.main.secondary">Select a response to view details</Text>
+          <Text color="default.main.secondary" className="text-sm mt-1">
+            You can create highlights from the transcript
+          </Text>
+        </div>
+      </Flex>
+    );
+  }
   
   // Mock full transcript
   const fullTranscript = blockType === 'input' || blockType === 'ai_conversation' 
@@ -301,20 +316,6 @@ function ResponseDetailPanel({ response, blockType, onCreateHighlight }) {
     setNote('');
     window.getSelection()?.removeAllRanges();
   };
-
-  if (!response) {
-    return (
-      <Flex alignItems="center" justifyContent="center" className="h-full bg-neutral-50 rounded-lg">
-        <div className="text-center">
-          <Highlighter size={32} className="text-[#6C718C] mx-auto mb-2" />
-          <Text color="default.main.secondary">Select a response to view details</Text>
-          <Text color="default.main.secondary" className="text-sm mt-1">
-            You can create highlights from the transcript
-          </Text>
-        </div>
-      </Flex>
-    );
-  }
 
   return (
     <div className="h-full flex flex-col">
