@@ -417,16 +417,9 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
       ref={cardRef}
       className={`relative p-4 rounded-lg border ${hasHighlight ? 'border-[#7C3AED]/30 bg-[#FDFBFF]' : 'border-[rgba(108,113,140,0.28)] bg-white'}`}
     >
-      {/* Content: Video thumbnail (if available) + transcript text + metadata */}
+      {/* Content: transcript text + metadata + Video thumbnail (on the right) */}
       <Flex gap="MD" alignItems="flex-start">
-        {/* Video thumbnail - only show if response has video */}
-        {hasVideo && (
-          <div className="flex-shrink-0">
-            <VideoThumbnail duration={response.clipDuration} />
-          </div>
-        )}
-        
-        {/* Transcript/Response text + metadata - aligned together */}
+        {/* Transcript/Response text + metadata - always left-aligned */}
         <div className="flex-1">
           <div 
             className={`text-neutral-700 leading-relaxed ${isOpenQuestion ? 'cursor-text select-text' : ''}`}
@@ -452,6 +445,13 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
             <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
           </Flex>
         </div>
+        
+        {/* Video thumbnail - on the right side, only show if response has video */}
+        {hasVideo && (
+          <div className="flex-shrink-0">
+            <VideoThumbnail duration={response.clipDuration} />
+          </div>
+        )}
       </Flex>
 
       {/* Highlight creation popover */}
