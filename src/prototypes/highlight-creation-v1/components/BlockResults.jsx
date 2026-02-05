@@ -7,7 +7,7 @@
  * - Responses table with tabs (All responses / Highlights)
  * - AI-generated highlights with new indicators
  */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Flex, Box, Text, Heading, IconFigure, ScrollContainer, ActionButton, Icon } from '@framework/components/ariane';
 import { MoreHorizontal, Filter, Play, ChevronLeft, ChevronRight, Table2, Highlighter, Tag, Info, Plus, Sparkles } from 'lucide-react';
 import { BLOCK_TYPES } from '../data';
@@ -34,9 +34,9 @@ const MOCK_RESPONSES_BY_TYPE = {
   ],
   input: [
     { id: 1, clipDuration: '0:45', participantId: '483697735', responseValue: 'I would add more tooltips to explain what each button does. Some icons are not intuitive.', respondedAt: '17 Dec 2025, 06:22 pm', isNew: true },
-    { id: 2, clipDuration: '0:38', participantId: '483697736', responseValue: 'The search feature could be more prominent. I had trouble finding it at first.', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
+    { id: 2, clipDuration: null, participantId: '483697736', responseValue: 'The search feature could be more prominent. I had trouble finding it at first.', respondedAt: '17 Dec 2025, 05:18 pm', isNew: true },
     { id: 3, clipDuration: '1:02', participantId: '483697737', responseValue: 'Overall great experience! Would love to see keyboard shortcuts for power users.', respondedAt: '17 Dec 2025, 04:54 pm', isNew: true },
-    { id: 4, clipDuration: '0:28', participantId: '483697738', responseValue: 'Dark mode would be a nice addition.', respondedAt: '17 Dec 2025, 03:47 pm' },
+    { id: 4, clipDuration: null, participantId: '483697738', responseValue: 'Dark mode would be a nice addition.', respondedAt: '17 Dec 2025, 03:47 pm' },
     { id: 5, clipDuration: '0:52', participantId: '483697739', responseValue: 'The loading times could be faster when switching between sections.', respondedAt: '17 Dec 2025, 02:44 pm' },
   ],
   simple_input: [
@@ -253,17 +253,19 @@ function HighlightPopover({ selectedText, clipDuration, onCreateHighlight, onClo
         autoFocus
       />
       
-      {/* Selected transcript quote with video thumbnail */}
+      {/* Selected transcript quote with video thumbnail (if available) */}
       <div className="bg-neutral-50 rounded-lg p-4 mb-4">
         <Flex gap="MD" alignItems="flex-start">
           <Text className="flex-1 text-neutral-700">{selectedText}</Text>
-          {/* Mini video thumbnail with timestamp */}
-          <div className="flex-shrink-0 relative w-[100px] h-[60px] rounded-lg overflow-hidden bg-neutral-200">
-            <div className="absolute inset-0 bg-gradient-to-br from-neutral-300 to-neutral-400" />
-            <div className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
-              {clipDuration || '0:05'}
+          {/* Mini video thumbnail with timestamp - only if there's a video */}
+          {clipDuration && (
+            <div className="flex-shrink-0 relative w-[100px] h-[60px] rounded-lg overflow-hidden bg-neutral-200">
+              <div className="absolute inset-0 bg-gradient-to-br from-neutral-300 to-neutral-400" />
+              <div className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                {clipDuration}
+              </div>
             </div>
-          </div>
+          )}
         </Flex>
       </div>
       
@@ -298,6 +300,28 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
   const [showPopover, setShowPopover] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState(null);
   const cardRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  // Click outside to close popover
+  useEffect(() => {
+    if (!showPopover) return;
+    
+    const handleClickOutside = (event) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+        closePopover();
+      }
+    };
+    
+    // Delay adding listener to avoid immediate close from the selection click
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPopover]);
 
   const handleMouseUp = () => {
     if (!isOpenQuestion) return;
@@ -309,7 +333,6 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
       setSelectedText(text);
       
       // Position popover below the card
-      const cardRect = cardRef.current?.getBoundingClientRect();
       setPopoverPosition({
         top: 'calc(100% + 8px)',
         left: 0,
@@ -331,6 +354,8 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
     window.getSelection()?.removeAllRanges();
   };
 
+  const hasVideo = response.clipDuration !== null;
+
   return (
     <div 
       ref={cardRef}
@@ -348,12 +373,14 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
         <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
       </Flex>
       
-      {/* Content: Video thumbnail + transcript text */}
+      {/* Content: Video thumbnail (if available) + transcript text */}
       <Flex gap="MD" alignItems="flex-start">
-        {/* Video thumbnail */}
-        <div className="flex-shrink-0">
-          <VideoThumbnail duration={response.clipDuration} />
-        </div>
+        {/* Video thumbnail - only show if response has video */}
+        {hasVideo && (
+          <div className="flex-shrink-0">
+            <VideoThumbnail duration={response.clipDuration} />
+          </div>
+        )}
         
         {/* Transcript/Response text - selectable for open questions */}
         <div className="flex-1">
@@ -368,13 +395,15 @@ function ResponseCard({ response, blockType, hasHighlight = false, isOpenQuestio
 
       {/* Highlight creation popover */}
       {showPopover && (
-        <HighlightPopover
-          selectedText={selectedText}
-          clipDuration={response.clipDuration}
-          onCreateHighlight={handleCreateHighlight}
-          onClose={closePopover}
-          position={popoverPosition}
-        />
+        <div ref={popoverRef}>
+          <HighlightPopover
+            selectedText={selectedText}
+            clipDuration={response.clipDuration}
+            onCreateHighlight={handleCreateHighlight}
+            onClose={closePopover}
+            position={popoverPosition}
+          />
+        </div>
       )}
     </div>
   );

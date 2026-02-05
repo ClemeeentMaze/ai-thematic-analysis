@@ -10,7 +10,7 @@
  * - Action buttons
  */
 import { Flex, Box, Text, ActionButton, Icon } from '@framework/components/ariane';
-import { GripVertical, Play, Plus, Pencil, LayoutGrid, Share2, AlignLeft } from 'lucide-react';
+import { Play, Plus, Pencil, LayoutGrid, Share2, AlignLeft } from 'lucide-react';
 
 /**
  * Theme tag pill
@@ -102,11 +102,6 @@ export function HighlightCard({
       )}
 
       <Flex gap="MD">
-        {/* Drag handle */}
-        <div className="flex-shrink-0 pt-1 cursor-grab text-[#6C718C] hover:text-[#535a74]">
-          <GripVertical size={20} />
-        </div>
-
         {/* Content */}
         <Box className="flex-1 min-w-0">
           {/* AI Insight */}
