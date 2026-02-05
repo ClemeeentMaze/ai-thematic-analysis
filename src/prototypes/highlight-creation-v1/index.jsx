@@ -15,8 +15,9 @@
  * └─────────────┴────────────────────────────────────────────────────────┘
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Flex, Box } from '@framework/components/ariane';
+import { Flex, Box, Text, ActionButton } from '@framework/components/ariane';
 import { useStatePlayground } from '@framework/hooks/useStatePlayground';
+import { Tag, X } from 'lucide-react';
 
 // Local components
 import { BuilderHeader } from './components/BuilderHeader';
@@ -29,6 +30,40 @@ import { ProjectStudiesScreen } from './components/ProjectStudiesScreen';
 // Mock data
 import { BLOCK_TYPES, DEFAULT_USE_CASE, USE_CASES } from './data';
 import { useBlocks } from './hooks/useBlocks';
+
+/**
+ * Toast notification component for new highlights
+ */
+function NewHighlightsToast({ onNavigateToThemes, onDismiss }) {
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-slide-up">
+      <div className="flex items-center gap-3 bg-white rounded-xl shadow-lg border border-[rgba(108,113,140,0.16)] px-4 py-3">
+        <div className="w-10 h-10 rounded-lg bg-[#F0FAFF] flex items-center justify-center flex-shrink-0">
+          <Tag size={20} className="text-[#0568FD]" />
+        </div>
+        <div className="flex-1">
+          <Text className="font-medium text-neutral-900">New highlights generated</Text>
+          <Text color="default.main.secondary" className="text-sm">
+            Run a{' '}
+            <button 
+              className="text-[#0568FD] underline hover:text-[#0450c9] cursor-pointer"
+              onClick={onNavigateToThemes}
+            >
+              thematic analysis
+            </button>
+            {' '}to find themes.
+          </Text>
+        </div>
+        <button 
+          onClick={onDismiss}
+          className="text-[#6C718C] hover:text-neutral-900 p-1 cursor-pointer"
+        >
+          <X size={20} />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 /**
  * ThematicAnalysisV1 - Main prototype component
@@ -67,11 +102,18 @@ function ThematicAnalysisV1() {
   
   // Track AI-generated themes (populated after analysis is complete)
   const [generatedThemes, setGeneratedThemes] = useState([]);
+  
+  // Toast visibility for new highlights notification
+  const [showNewHighlightsToast, setShowNewHighlightsToast] = useState(false);
 
   // Handle study selection from project screen
   const handleSelectStudy = (studyId) => {
     setSelectedStudyId(studyId);
     setCurrentView('results');
+    // Show toast when entering results (only if analysis hasn't been done yet)
+    if (generatedThemes.length === 0) {
+      setShowNewHighlightsToast(true);
+    }
   };
 
   // Handle back navigation to project screen
@@ -83,6 +125,15 @@ function ThematicAnalysisV1() {
   // Handle analysis completion - add generated themes to the list
   const handleAnalysisComplete = (themes) => {
     setGeneratedThemes(themes);
+    // Hide toast when analysis is complete
+    setShowNewHighlightsToast(false);
+  };
+  
+  // Navigate to thematic analysis from toast
+  const handleToastNavigateToThemes = () => {
+    setActiveTab('themes');
+    setSelectedThemeId('thematic-analysis');
+    setShowNewHighlightsToast(false);
   };
 
   // Mark the PREVIOUS block as viewed when navigating to a new block
@@ -183,6 +234,14 @@ function ThematicAnalysisV1() {
       flexDirection="column" 
       className="h-screen w-full overflow-hidden bg-neutral-50"
     >
+      {/* Toast notification for new highlights */}
+      {showNewHighlightsToast && (
+        <NewHighlightsToast 
+          onNavigateToThemes={handleToastNavigateToThemes}
+          onDismiss={() => setShowNewHighlightsToast(false)}
+        />
+      )}
+      
       {/* 
         HEADER - Fixed 64px height
         Contains: Back button, study name, save state, actions

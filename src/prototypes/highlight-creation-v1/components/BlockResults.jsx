@@ -649,15 +649,28 @@ export function BlockResults({ block, isViewed = false, generatedThemes = [], on
                 <div className="w-[80px] px-4 text-right">ACTIONS</div>
               </div>
 
-              {/* Theme Rows - show themes relevant to this block */}
-              {generatedThemes.slice(0, 4).map((theme, index) => (
-                <ThemeRow 
-                  key={theme.id}
-                  theme={theme}
-                  frequency={theme.highlightCount}
-                  percentage={Math.round((theme.highlightCount / 8) * 100)}
-                />
-              ))}
+              {/* Theme Rows - only show themes applied to highlights in this block */}
+              {(() => {
+                // Get highlight IDs for this block
+                const blockHighlightIds = blockHighlights.map(h => h.id);
+                // Get unique theme names applied to this block's highlights
+                const blockThemeNames = new Set();
+                blockHighlightIds.forEach(hId => {
+                  const themes = HIGHLIGHT_THEME_MAPPING[hId] || [];
+                  themes.forEach(t => blockThemeNames.add(t));
+                });
+                // Filter generatedThemes to only those applied to this block
+                const relevantThemes = generatedThemes.filter(t => blockThemeNames.has(t.name));
+                
+                return relevantThemes.map((theme) => (
+                  <ThemeRow 
+                    key={theme.id}
+                    theme={theme}
+                    frequency={theme.highlightCount}
+                    percentage={Math.round((theme.highlightCount / 8) * 100)}
+                  />
+                ));
+              })()}
             </div>
           </div>
         )}
