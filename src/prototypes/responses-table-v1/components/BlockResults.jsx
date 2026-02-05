@@ -767,14 +767,28 @@ function ResponseRow({ clipDuration, participantId, responseValue, respondedAt, 
 /**
  * Transcript Response Row - Table row with selectable transcript text for Open Question/AI Conversation
  * Uses table layout like other blocks but with text selection capability
+ * Shows full transcript with "More..." expand for content over 6 lines
  */
 function TranscriptResponseRow({ response, hasHighlight = false, onNavigateToParticipant, generatedThemes = [] }) {
   const [selectedText, setSelectedText] = useState('');
   const [showPopover, setShowPopover] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState(null);
   const [isViewingExistingHighlight, setIsViewingExistingHighlight] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const rowRef = useRef(null);
   const popoverRef = useRef(null);
+  const textRef = useRef(null);
+  const [needsExpand, setNeedsExpand] = useState(false);
+
+  // Check if content exceeds 6 lines (approximately 144px at 24px line height)
+  useEffect(() => {
+    if (textRef.current) {
+      const lineHeight = 24; // leading-relaxed is ~1.625, with 15px text ≈ 24px
+      const maxLines = 6;
+      const maxHeight = lineHeight * maxLines;
+      setNeedsExpand(textRef.current.scrollHeight > maxHeight);
+    }
+  }, [response.responseValue]);
 
   // Click outside and ESC key to close popover
   useEffect(() => {
@@ -910,53 +924,74 @@ function TranscriptResponseRow({ response, hasHighlight = false, onNavigateToPar
     <span className="bg-[#0568FD] text-white px-0.5 rounded-sm">{text}</span>
   );
 
-  // Render transcript text with highlighting support
+  // Render transcript text with highlighting support - shows FULL transcript
   const renderTranscriptText = () => {
     const text = response.responseValue;
     const highlightText = response.highlightedText;
     const activeSelection = selectedText && showPopover ? selectedText : null;
     const highlightColors = getHighlightColors();
     
-    // For AI conversation - just show first line/summary
-    const displayText = text.includes('\n\n') ? text.split('\n\n')[0] : text;
+    // Split by double newlines to get paragraphs (for AI conversation formatting)
+    const paragraphs = text.split('\n\n');
     
-    // Handle active selection
-    if (activeSelection && displayText.includes(activeSelection)) {
-      const parts = displayText.split(activeSelection);
+    return paragraphs.map((paragraph, pIndex) => {
+      // Check if this paragraph starts with **Interviewer:**
+      const interviewerMatch = paragraph.match(/^\*\*Interviewer:\*\*\s*(.*)/);
+      
+      if (interviewerMatch) {
+        return (
+          <p key={pIndex} className="mt-2 first:mt-0">
+            <span className="font-semibold text-neutral-600">Interviewer:</span>{' '}
+            <span className="text-neutral-600 italic">{interviewerMatch[1]}</span>
+          </p>
+        );
+      }
+      
+      // Regular participant text - apply highlighting
+      let content;
+      
+      // Handle active selection
+      if (activeSelection && paragraph.includes(activeSelection)) {
+        const parts = paragraph.split(activeSelection);
+        content = (
+          <>
+            {parts[0].split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `pre-${pIndex}-${i}`))}
+            {renderActiveSelection(activeSelection)}
+            {parts.slice(1).join(activeSelection).split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `post-${pIndex}-${i}`))}
+          </>
+        );
+      } else if (highlightText && paragraph.includes(highlightText)) {
+        // Handle existing highlight
+        const parts = paragraph.split(highlightText);
+        content = (
+          <>
+            {parts[0].split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `pre-${pIndex}-${i}`))}
+            {renderExistingHighlight(highlightText, highlightColors)}
+            {parts.slice(1).join(highlightText).split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `post-${pIndex}-${i}`))}
+          </>
+        );
+      } else {
+        // Default: render with hover effect
+        content = paragraph.split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `${pIndex}-${i}`));
+      }
+      
       return (
-        <>
-          {parts[0].split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `pre-${i}`))}
-          {renderActiveSelection(activeSelection)}
-          {parts.slice(1).join(activeSelection).split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `post-${i}`))}
-        </>
+        <p key={pIndex} className="mt-2 first:mt-0">
+          {content}
+        </p>
       );
-    }
-    
-    // Handle existing highlight
-    if (highlightText && displayText.includes(highlightText)) {
-      const parts = displayText.split(highlightText);
-      return (
-        <>
-          {parts[0].split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `pre-${i}`))}
-          {renderExistingHighlight(highlightText, highlightColors)}
-          {parts.slice(1).join(highlightText).split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, `post-${i}`))}
-        </>
-      );
-    }
-    
-    // Default: render with hover effect
-    return displayText.split(/(\s+)/).map((part, i) => part.match(/^\s+$/) ? part : renderSelectableWord(part, i));
+    });
   };
 
   return (
     <div 
       ref={rowRef}
-      className="flex items-center py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50 relative"
+      className="flex items-start py-4 border-b border-[rgba(108,113,140,0.12)] hover:bg-neutral-50 relative"
     >
-      <div className="w-[140px] px-4 relative">
+      <div className="w-[140px] px-4 relative pt-1">
         <VideoThumbnail duration={response.clipDuration} />
       </div>
-      <div className="w-[160px] px-4">
+      <div className="w-[160px] px-4 pt-1">
         <Flex alignItems="center" gap="XS">
           <button 
             className="text-[#0568FD] font-medium hover:underline cursor-pointer"
@@ -973,17 +1008,38 @@ function TranscriptResponseRow({ response, hasHighlight = false, onNavigateToPar
         className="flex-1 px-4 cursor-text"
         onMouseUp={handleMouseUp}
       >
-        <Text className="text-neutral-900 leading-relaxed">
+        {/* Transcript text with expand/collapse */}
+        <div 
+          ref={textRef}
+          className={`text-neutral-900 leading-relaxed overflow-hidden transition-all duration-200 ${
+            !isExpanded && needsExpand ? 'max-h-[144px]' : ''
+          }`}
+          style={!isExpanded && needsExpand ? { 
+            maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)'
+          } : {}}
+        >
           {renderTranscriptText()}
-        </Text>
-        <Text color="default.main.secondary" className="text-xs mt-1 italic">
+        </div>
+        
+        {/* More/Less toggle */}
+        {needsExpand && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-[#0568FD] text-sm font-medium mt-1 hover:underline cursor-pointer"
+          >
+            {isExpanded ? 'Less' : 'More...'}
+          </button>
+        )}
+        
+        <Text color="default.main.secondary" className="text-xs mt-2 italic">
           Select text to create a highlight
         </Text>
       </div>
-      <div className="w-[180px] px-4">
+      <div className="w-[180px] px-4 pt-1">
         <Text color="default.main.secondary">{response.respondedAt}</Text>
       </div>
-      <div className="w-[80px] px-4 flex justify-center">
+      <div className="w-[80px] px-4 flex justify-center pt-1">
         <ActionButton emphasis="tertiary" size="SM" icon={<Icon name="share" />} iconOnly />
       </div>
 
